@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+  tests/test.html — full offline test suite. Open it by double-click like index.html.
+
+  Runs every registered test: the critical start-up known-answer tests from
+  js/core/selftest-vendor.js plus the full official vector sets and core
+  helper tests under tests/. Same Content-Security-Policy as index.html.
+
+  Machine-readable result (used by tools/browser-test/run.mjs):
+    document.title becomes "PASS <passed>/<total>" or "FAIL <failed>/<total>"
+    and <pre id="summary"> holds a JSON summary.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RUNNING</title>
+  <link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+  <div id="app"><noscript>JavaScript is required.</noscript></div>
+
+  <!-- Code under test: same files, same order as index.html (minus the app UI) -->
+  <script src="../vendor/wg-crypto.js"></script>
+  <script src="../js/core/namespace.js"></script>
+  <script src="../js/core/bytes.js"></script>
+  <script src="../js/core/selftest.js"></script>
+  <script src="../js/core/selftest-vendor.js"></script>
+  <script src="../js/ui/dom.js"></script>
+
+  <!-- Official test vectors (data only) -->
+  <script src="vectors/bip39-trezor.js"></script>
+  <script src="vectors/bip32.js"></script>
+
+  <!-- Test suites -->
+  <script src="suites/core.js"></script>
+  <script src="suites/bip-vectors.js"></script>
+  <script src="suites/csp.js"></script>
+
+  <!-- Runner UI -->
+  <script src="test-page.js"></script>
+</body>
+</html>

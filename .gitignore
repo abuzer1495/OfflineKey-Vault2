@@ -1,0 +1,12 @@
+# Maintainer tooling dependencies (re-created with `npm ci --ignore-scripts`)
+node_modules/
+
+# Release build output (created by tools, attached to GitHub releases instead)
+dist/
+
+# Editor / OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.tmp

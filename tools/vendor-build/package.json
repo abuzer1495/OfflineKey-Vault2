@@ -1,0 +1,22 @@
+{
+  "name": "wg-vendor-build",
+  "private": true,
+  "description": "Maintainer-only tool: bundles pinned npm crypto libraries into plain browser scripts under /vendor. End users never run this.",
+  "license": "MIT",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@noble/ciphers": "2.4.0",
+    "@noble/curves": "2.4.0",
+    "@noble/hashes": "2.4.0",
+    "@scure/base": "2.4.0",
+    "@scure/bip32": "2.4.0",
+    "@scure/bip39": "2.4.0",
+    "jspdf": "4.2.1",
+    "qrcode-generator": "2.0.4"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

@@ -1,0 +1,102 @@
+/*
+ * css/app.css
+ *
+ * Screen styles for index.html and tests/test.html. Colours are defined as
+ * tokens on :root and redefined for dark mode. Print styles for wallet cards
+ * will be added with the PDF/print milestone (M7).
+ */
+
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --text: #1b1f24;
+  --muted: #5b6470;
+  --border: #d8dde3;
+  --accent: #f26822;          /* Monero orange, used sparingly */
+  --good: #1a7f37;
+  --good-bg: #e6f4ea;
+  --bad: #b42318;
+  --bad-bg: #fdecea;
+  --warn: #8a5300;
+  --warn-bg: #fff4e0;
+  --radius: 10px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111418;
+    --surface: #1a1f25;
+    --text: #e6e9ed;
+    --muted: #9aa4b0;
+    --border: #2d343c;
+    --good: #5cc97a;
+    --good-bg: #13291b;
+    --bad: #ff7b72;
+    --bad-bg: #3a1614;
+    --warn: #f0b45a;
+    --warn-bg: #33250e;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+#app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+h1 { font-size: 1.6rem; margin: 0; }
+h2 { font-size: 1.15rem; margin: 0 0 8px; }
+a { color: var(--accent); }
+.muted { color: var(--muted); }
+
+.header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+button {
+  font: inherit;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+
+.banner { padding: 10px 14px; border-radius: var(--radius); margin: 16px 0; font-weight: 600; }
+.banner-warn { background: var(--warn-bg); color: var(--warn); }
+.banner-ok { background: var(--good-bg); color: var(--good); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.status-good { color: var(--good); font-weight: 600; }
+.status-bad { color: var(--bad); font-weight: 600; background: var(--bad-bg); padding: 8px; border-radius: var(--radius); }
+
+.test-list { list-style: none; padding: 0; margin: 8px 0; font-size: 0.92rem; }
+.test-list li { padding: 2px 0; overflow-wrap: anywhere; }
+.test-list .ok { color: var(--good); }
+.test-list .fail { color: var(--bad); }
+
+/* tests/test.html */
+table.results { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+table.results th, table.results td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--border); vertical-align: top; overflow-wrap: anywhere; }
+table.results td.num { text-align: right; white-space: nowrap; color: var(--muted); }
+table.results tr.group th { background: var(--bg); padding-top: 12px; }
+pre { font-family: var(--mono); font-size: 0.85rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+footer { margin-top: 32px; font-size: 0.9rem; }

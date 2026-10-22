@@ -1,0 +1,15 @@
+# Normalise all text files to LF so checksums and diffs are identical on every OS
+# (this repo is developed on Windows with core.autocrlf=true).
+* text=auto eol=lf
+
+# Vendor files are verified byte-for-byte against vendor/SHA256SUMS and the npm
+# tarballs; git must never rewrite their line endings.
+vendor/** -text -diff
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ttf binary
+*.woff2 binary
+*.zip binary
