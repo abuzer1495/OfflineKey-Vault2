@@ -98,7 +98,7 @@
   /**
    * Build the panel.
    * @param {object} set  wallet set from WG.generator.generate
-   * @param {{onClear: function, onPdf: function}} opts
+   * @param {{onClear: function}} opts
    */
   function create(set, opts) {
     var created = new Date(set.createdAt);
@@ -132,11 +132,9 @@
     // Coins
     section.appendChild(el('div', { class: 'coin-cards' }, set.results.map(function (r) { return coinCard(r, set); })));
 
-    var pdfBtn = el('button', { type: 'button', class: 'primary' }, t('resToPdf'));
-    pdfBtn.addEventListener('click', opts.onPdf);
     var clearBtn = el('button', { type: 'button', class: 'danger' }, t('resClear'));
     clearBtn.addEventListener('click', function () { if (window.confirm(t('resClearConfirm'))) opts.onClear(); });
-    section.appendChild(el('div', { class: 'input-row' }, pdfBtn, clearBtn));
+    section.appendChild(el('div', { class: 'input-row' }, clearBtn));
     return { element: section, destroy: function () {} };
   }
 

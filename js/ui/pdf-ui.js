@@ -7,6 +7,9 @@
  *   size, page separation, background images, manual page) and the button
  *   that builds and downloads the PDF (js/output/pdf.js).
  *
+ *   A 2/5-scale page preview (js/ui/pdf-preview.js) sits above the form:
+ *   dragging its lines edits margins / card size / gap, typing in the form
+ *   moves the lines; both views stay in sync.
  *   Options live in a layout object owned by app.js (survives re-renders).
  *   Background images are re-encoded through a canvas to JPEG (max 2000 px),
  *   which also strips photo metadata (EXIF/GPS) before it goes into the PDF.
@@ -62,8 +65,8 @@
     });
   }
 
-  /** One form field bound to layout[key]. */
-  function field(layout, f, onChange) {
+  /** One form field bound to layout[key]; the input is also stored in inputs[key]. */
+  function field(layout, f, onChange, inputs) {
     var key = f[0], type = f[1], id = 'pdf-' + key, input;
     if (type === 'select') {
       input = el('select', { id: id }, f[3].map(function (o) {
@@ -73,6 +76,7 @@
     } else if (type === 'check') {
       input = el('input', { type: 'checkbox', id: id, checked: layout[key] ? 'checked' : null });
       input.addEventListener('change', function () { layout[key] = input.checked; onChange(); });
+      inputs[key] = input;
       return el('label', { class: 'check', for: id }, input, ' ', t(f[2]));
     } else {
       var x = f[3] || { min: 0, max: 300, step: 0.1 };
@@ -83,6 +87,7 @@
         onChange();
       });
     }
+    inputs[key] = input;
     return el('label', { class: 'field', for: id }, el('span', null, t(f[2])), input);
   }
 
@@ -102,15 +107,23 @@
       button.disabled = !!err;
     }
 
+    var inputs = {};
+    // Form edits redraw the preview; preview drags rewrite the number fields.
+    var preview = WG.pdfPreview.create(layout, WG.pdf.cardsFor(set, layout).length, function () {
+      ['marginTop', 'marginLeft', 'cardWidth', 'cardHeight', 'gap'].forEach(function (k) { inputs[k].value = layout[k]; });
+      check();
+    });
+    function changed() { preview.refresh(); check(); }
+
     var fields = FIELDS.filter(function (f) { return f[0] !== 'coinSecrets' || set.mode !== 'single'; })
-      .map(function (f) { return field(layout, f, check); });
+      .map(function (f) { return field(layout, f, changed, inputs); });
 
     /** File input for a background image side. */
     function bgInput(key, label) {
       var input = el('input', { type: 'file', id: 'pdf-' + key, accept: 'image/png,image/jpeg,image/webp' });
       input.addEventListener('change', function () {
-        if (!input.files[0]) { layout[key] = null; return; }
-        loadImage(input.files[0]).then(function (data) { layout[key] = data; }, function (e) { msg.textContent = e.message; });
+        if (!input.files[0]) { layout[key] = null; changed(); return; }
+        loadImage(input.files[0]).then(function (data) { layout[key] = data; changed(); }, function (e) { msg.textContent = e.message; });
       });
       return el('label', { class: 'field', for: 'pdf-' + key }, el('span', null, t(label)), input);
     }
@@ -129,6 +142,7 @@
     var section = el('section', { class: 'card pdf', id: 'pdf' },
       el('h2', null, t('pdfTitle')),
       el('p', { class: 'muted small' }, t('pdfIntro')),
+      el('div', { class: 'preview-wrap' }, preview.element, el('p', { class: 'muted small' }, t('prevHint'))),
       el('div', { class: 'form-grid' }, fields, bgInput('bgFront', 'pdfBgFront'), bgInput('bgBack', 'pdfBgBack')),
       el('p', { class: 'warn small' }, t('pdfWarn')),
       el('div', { class: 'generate-row' }, button), msg);

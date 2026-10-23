@@ -18,7 +18,8 @@
  *   Chromium: --dump-dom after a virtual-time budget; console via stderr.
  *   Firefox:  WebDriver BiDi over WebSocket (no --dump-dom in Firefox).
  *   Firefox also runs the full UI flow in smoke.js (entropy -> generate -> PDF);
- *   with WG_SAMPLE_DIR=<dir> it writes the sample PDFs of samples.js there.
+ *   with WG_SAMPLE_DIR=<dir> it writes the sample PDFs of samples.js there,
+ *   with WG_SHOT_DIR=<dir> full-page screenshots of step 1 and step 4.
  *
  * Needs only Node.js >= 22 (global WebSocket); no npm packages.
  */
@@ -153,11 +154,19 @@ async function testFirefox(b, url) {
         target: { context }, awaitPromise: true,
       })).result.value;
       if (!/^16 \/ 256 bit$/.test(meter)) problems.push('ui smoke: meter shows "' + meter + '", expected "16 / 256 bit"');
+      // Optional screenshots (full page) for visual review.
+      const shot = async (name) => {
+        if (!process.env.WG_SHOT_DIR) return;
+        const r = await send('browsingContext.captureScreenshot', { context, origin: 'document' });
+        writeFileSync(join(process.env.WG_SHOT_DIR, name + '.png'), Buffer.from(r.data, 'base64'));
+      };
+      await shot('step1');
       // Full user flow: entropy -> all coins -> generate -> PDF (see smoke.js).
       const smoke = JSON.parse((await send('script.evaluate', {
         expression: readFileSync(join(here, 'smoke.js'), 'utf8'), target: { context }, awaitPromise: true,
       })).result.value);
-      if (smoke.error || smoke.coinCards !== 10 || !smoke.checksOk || !smoke.revealOk || !smoke.pdfMsg) problems.push('ui flow: ' + JSON.stringify(smoke));
+      await shot('step4');
+      if (smoke.error || smoke.coinCards !== 10 || !smoke.checksOk || !smoke.revealOk || !smoke.dragOk || !smoke.typeOk || !smoke.pdfMsg) problems.push('ui flow: ' + JSON.stringify(smoke));
       // Optional sample PDFs for visual review.
       if (process.env.WG_SAMPLE_DIR) {
         const samples = JSON.parse((await send('script.evaluate', {

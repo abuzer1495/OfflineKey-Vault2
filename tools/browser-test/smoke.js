@@ -4,13 +4,15 @@
  * PURPOSE
  *   UI smoke test evaluated INSIDE index.html by run.mjs (Firefox, WebDriver
  *   BiDi). It drives the real interface like a user would:
- *     1. 6 dice + 1 coin flip  -> meter must show 16 bits
- *     2. 94 more dice          -> enough entropy (259 >= 256 bits)
+ *     1. (run.mjs already added 6 dice + 1 coin flip = 16 bits)
+ *     2. 94 more dice          -> enough entropy (259 >= 256 bits), "Apply"
  *     3. select all 10 coins, press "Generate wallet"
- *     4. the result panel must show 10 coin cards and only passing checks
+ *     4. the result step must show 10 coin cards and only passing checks
  *     5. a secret appears in the DOM only after "Show" and leaves on "Hide"
- *     6. press "Create and download PDF" -> success message
- *   Returns a JSON string { meter16, coinCards, checksOk, revealOk, pdfMsg, error }.
+ *     6. "Print" step: dragging the card-width line changes the form field,
+ *        typing a left margin moves the line
+ *     7. press "Create and download PDF" -> success message
+ *   Returns a JSON string { coinCards, checksOk, revealOk, dragOk, typeOk, pdfMsg, error }.
  */
 (async () => {
   const $ = (id) => document.getElementById(id);
@@ -21,14 +23,11 @@
   };
   const out = {};
   try {
-    $('dice-input').value = '1 2 3, 4 5 6';
-    $('dice-add').click();
-    $('coin-heads').click();
-    await frame();
-    out.meter16 = document.querySelector('.meter-text').textContent;
-
     $('dice-input').value = '3615244326155142363125642351'.repeat(4).slice(0, 94);
     $('dice-add').click();
+    await frame();
+    if ($('ent-apply').disabled) throw new Error('apply disabled');
+    $('ent-apply').click();
     await frame();
 
     for (const id of ['btc', 'ltc', 'doge', 'eth', 'trx', 'xrp', 'sol', 'xlm', 'ada', 'xmr']) {
@@ -50,6 +49,25 @@
     const shown = value();
     secret.querySelector('.reveal').click();
     out.revealOk = /•/.test(before) && !/•/.test(shown) && shown.length > 20 && value() === before;
+
+    $('to-print').click();
+    await frame();
+    // Drag the card-width line 20 px to the right.
+    const width0 = $('pdf-cardWidth').value;
+    const line = document.querySelectorAll('.handle-x')[1];   // x-handles in order: marginLeft, cardWidth, gap
+    const r = line.getBoundingClientRect();
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    line.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: x, clientY: y, pointerId: 1 }));
+    document.querySelector('svg.page-preview').dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: x + 20, clientY: y, pointerId: 1 }));
+    document.querySelector('svg.page-preview').dispatchEvent(new PointerEvent('pointerup', { bubbles: true, pointerId: 1 }));
+    out.dragOk = Number($('pdf-cardWidth').value) > Number(width0);
+    // Type a left margin: the marginLeft line must move to x = 20 mm.
+    $('pdf-marginLeft').value = '20';
+    $('pdf-marginLeft').dispatchEvent(new Event('input', { bubbles: true }));
+    out.typeOk = document.querySelectorAll('.handle-x')[0].querySelector('line').getAttribute('x1') === '20';
+    // Restore sizes that fit before building the PDF.
+    $('pdf-marginLeft').value = '10'; $('pdf-marginLeft').dispatchEvent(new Event('input', { bubbles: true }));
+    $('pdf-cardWidth').value = width0; $('pdf-cardWidth').dispatchEvent(new Event('input', { bubbles: true }));
 
     $('pdf-build').click();
     out.pdfMsg = await until(() => { const m = document.querySelector('.pdf .field-msg').textContent; return /PDF/.test(m) && !/…/.test(m) ? m : null; }, 30000);

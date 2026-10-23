@@ -401,55 +401,63 @@
     var size = pageSize(L);
     var doc = newDoc(size);
     var cards = cardsFor(set, L);
-    var stepY = L.cardHeight + L.gap;
-    var rows = Math.max(1, Math.floor((size.h - 2 * L.marginTop + L.gap) / stepY));
-    var first = true;
-
-    function newPage() {
-      if (!first) doc.addPage([size.w, size.h], size.w > size.h ? 'l' : 'p');
-      first = false;
-    }
-
-    if (!L.separate) {
-      // Front | gap | back on each row.
-      cards.forEach(function (card, i) {
-        var r = i % rows;
-        if (r === 0) newPage();
-        var y = L.marginTop + r * stepY;
-        var xf = L.marginLeft, xb = L.marginLeft + L.cardWidth + L.gap;
-        drawSide(doc, L, card.front, 'front', xf, y, L.cardWidth, L.cardHeight);
-        drawSide(doc, L, card.back, 'back', xb, y, L.cardWidth, L.cardHeight);
-        cutMarks(doc, L, xf, y, L.cardWidth, L.cardHeight);
-        cutMarks(doc, L, xb, y, L.cardWidth, L.cardHeight);
+    placements(L, cards.length).forEach(function (page, i) {
+      if (i > 0) doc.addPage([size.w, size.h], size.w > size.h ? 'l' : 'p');
+      page.forEach(function (p) {
+        drawSide(doc, L, cards[p.card][p.side], p.side, p.x, p.y, L.cardWidth, L.cardHeight);
+        cutMarks(doc, L, p.x, p.y, L.cardWidth, L.cardHeight);
       });
-    } else {
-      // Grid of fronts, then the same grid of backs mirrored for duplex.
-      var stepX = L.cardWidth + L.gap;
-      var cols = Math.max(1, Math.floor((size.w - 2 * L.marginLeft + L.gap) / stepX));
-      var perPage = cols * rows;
-      for (var start = 0; start < cards.length; start += perPage) {
-        var chunk = cards.slice(start, start + perPage);
-        ['front', 'back'].forEach(function (side) {
-          newPage();
-          chunk.forEach(function (card, i) {
-            var c = i % cols, r = Math.floor(i / cols);
-            var x = L.marginLeft + c * stepX;
-            if (side === 'back') x = size.w - x - L.cardWidth;          // mirror for duplex
-            var y = L.marginTop + r * stepY;
-            drawSide(doc, L, card[side], side, x, y, L.cardWidth, L.cardHeight);
-            cutMarks(doc, L, x, y, L.cardWidth, L.cardHeight);
-          });
-        });
-      }
-    }
+    });
     if (L.manual) WG.pdfManual.addTo(doc, set, L, { font: font, lh: lh, wrapText: wrapText, colsFor: colsFor });
     return doc;
+  }
+
+  /**
+   * Where every card side goes. Shared by build() and the on-screen preview
+   * (js/ui/pdf-preview.js), so both always show the same layout.
+   * @param {object} L  layout options
+   * @param {number} n  number of cards (front + back pairs)
+   * @returns {Array<Array<{card:number, side:'front'|'back', x:number, y:number}>>} one array per page
+   */
+  function placements(L, n) {
+    var size = pageSize(L);
+    var stepY = L.cardHeight + L.gap;
+    var rows = Math.max(1, Math.floor((size.h - 2 * L.marginTop + L.gap) / stepY));
+    var pages = [];
+    var i;
+    if (!L.separate) {
+      // Front | gap | back on each row.
+      for (i = 0; i < n; i++) {
+        if (i % rows === 0) pages.push([]);
+        var y = L.marginTop + (i % rows) * stepY;
+        pages[pages.length - 1].push({ card: i, side: 'front', x: L.marginLeft, y: y },
+          { card: i, side: 'back', x: L.marginLeft + L.cardWidth + L.gap, y: y });
+      }
+      return pages;
+    }
+    // Grid of fronts, then the same grid of backs mirrored for long-edge duplex.
+    var stepX = L.cardWidth + L.gap;
+    var cols = Math.max(1, Math.floor((size.w - 2 * L.marginLeft + L.gap) / stepX));
+    var perPage = cols * rows;
+    for (var start = 0; start < n; start += perPage) {
+      ['front', 'back'].forEach(function (side) {
+        var page = [];
+        for (var k = 0; k < Math.min(perPage, n - start); k++) {
+          var x = L.marginLeft + (k % cols) * stepX;
+          if (side === 'back') x = size.w - x - L.cardWidth;
+          page.push({ card: start + k, side: side, x: x, y: L.marginTop + Math.floor(k / cols) * stepY });
+        }
+        pages.push(page);
+      });
+    }
+    return pages;
   }
 
   WG.define('pdf', {
     build: build,
     checkFit: checkFit,
     pageSize: pageSize,
+    placements: placements,
     cardsFor: cardsFor,
     /** Layout defaults: the original project's values (credit-card size, green guides). */
     defaults: function () {

@@ -24,8 +24,11 @@ optional verifiable "dice only" mode follows the Coldcard method.
 2. Disconnect the computer from the internet.
 3. Double-click `index.html`. The page runs its cryptographic self-tests and
    refuses to generate keys if any of them fails.
-4. Collect entropy (section 1), choose coins and options (2), press
-   **Generate wallet** (3), then **Create and download PDF** (4).
+4. Follow the four steps with **Next / Back**: collect entropy and press
+   **Apply and continue** (or **Skip** to rely on the browser CSPRNG only),
+   choose coins and options and press **Generate wallet**, check the wallet,
+   then arrange the cards on the 2/5-scale page preview (drag the lines or
+   type the values) and press **Create and download PDF**.
 5. Print the PDF, cut along the guides, delete the PDF file, close the browser.
 
 ## Safety
@@ -80,9 +83,11 @@ Tek bir HTML dosyası açılarak tüm güncel tarayıcılarda **tamamen
 taşınabilir cüzdan üreticisi.
 
 **Kullanım:** Release zip'ini indirin, `SHA256SUMS` ile doğrulayın, açın;
-internet bağlantısını kesin; `index.html`'e çift tıklayın. Entropi toplayın
-(1), coin ve seçenekleri belirleyin (2), **Cüzdan üret**'e basın (3), sonra
-**PDF oluştur ve indir** (4). PDF'i yazdırın, kılavuz çizgilerinden kesin,
+internet bağlantısını kesin; `index.html`'e çift tıklayın. Dört adımı
+**İleri / Geri** ile izleyin: entropi toplayıp **Uygula ve devam et**'e basın
+(ya da **Atla**), coin ve seçenekleri belirleyip **Cüzdan üret**'e basın,
+cüzdanı kontrol edin, kartları 2/5 ölçekli sayfa önizlemesinde çizgileri
+sürükleyerek veya değer yazarak yerleştirin ve **PDF oluştur ve indir**'e basın. PDF'i yazdırın, kılavuz çizgilerinden kesin,
 dosyayı silin ve tarayıcıyı kapatın.
 
 **Güvenlik:** Her cüzdan gösterilmeden önce otomatik doğrulanır; sayfa ağa
