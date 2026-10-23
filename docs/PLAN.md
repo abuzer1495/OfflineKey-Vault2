@@ -191,10 +191,12 @@ Kullanıcı arayüzde ayrı ayrı açıp kapatabilir:
 - `tools/release/make-zip.mjs`: git'te izlenen dosyalardan tekrar üretilebilir zip + SHA256SUMS; v0.1.0 GitHub pre-release.
 - Safari / iOS elle test edilmedi (bu makinede yok).
 
-### v0.2.0-dev (2026-10-23)
+### v0.2.0 (2026-10-23)
 - Tek sayfa yerine 4 adımlı sihirbaz (Geri/İleri): Entropi → Ayarlar → Cüzdan → Yazdır. Entropi adımında "Atla" (onayla, yalnızca CSPRNG) ve "Uygula ve devam et" (eşik dolunca).
 - Yazdır adımında görsel düzenleyici: sayfanın 2/5 ölçekli SVG önizlemesi; üst/sol boşluk, kart genişliği/yüksekliği ve kartlar arası boşluk çizgi sürükleyerek veya alanlardan ayarlanır, iki yön senkron. Önizleme ve PDF aynı `WG.pdf.placements()` fonksiyonunu kullanır.
 - Firefox akış testi sihirbazı, sürüklemeyi ve alan→çizgi senkronunu da sınıyor.
+- Hata düzeltmesi: "Temizle ve baştan başla" entropi havuzunu sıfırlamıyordu; sayaç eski değerden devam ediyordu. Artık havuz sıfırlanıyor; akış testi bunu ve tek fare hareketinin tam 0,5 bit eklediğini kontrol ediyor.
+- Kural: her sürüm GitHub release olarak yayımlanır (`tools/release/make-zip.mjs` + `gh release create`).
 
 ## 12. AI güvenlik denetim tarifnamesi
 

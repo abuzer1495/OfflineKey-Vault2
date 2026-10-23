@@ -12,7 +12,9 @@
  *     6. "Print" step: dragging the card-width line changes the form field,
  *        typing a left margin moves the line
  *     7. press "Create and download PDF" -> success message
- *   Returns a JSON string { coinCards, checksOk, revealOk, dragOk, typeOk, pdfMsg, error }.
+ *     8. "Clear and start over" -> back to step 1 with the meter at 0, and
+ *        one pointer move adds exactly 0.5 bit (no duplicate listeners)
+ *   Returns a JSON string { coinCards, checksOk, revealOk, dragOk, typeOk, pdfMsg, restartOk, error }.
  */
 (async () => {
   const $ = (id) => document.getElementById(id);
@@ -71,6 +73,16 @@
 
     $('pdf-build').click();
     out.pdfMsg = await until(() => { const m = document.querySelector('.pdf .field-msg').textContent; return /PDF/.test(m) && !/…/.test(m) ? m : null; }, 30000);
+
+    window.confirm = () => true;          // accept the "start over" question
+    $('restart').click();
+    await frame();
+    const zero = document.querySelector('.meter-text').textContent;
+    const pad = document.querySelector('canvas.pad');
+    const pr = pad.getBoundingClientRect();
+    pad.dispatchEvent(new PointerEvent('pointermove', { clientX: pr.left + 30, clientY: pr.top + 30, pointerType: 'mouse' }));
+    await frame();
+    out.restartOk = /^0 \//.test(zero) && /^0\.5 \//.test(document.querySelector('.meter-text').textContent);
   } catch (e) {
     out.error = e.message;
   }

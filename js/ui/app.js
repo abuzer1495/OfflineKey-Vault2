@@ -121,8 +121,9 @@
       panel = WG.pdfUi.create(state.wallet, state.layout);
       nav.appendChild(button('← ' + t('stepWallet'), null, function () { go(3); }));
       nav.appendChild(button(t('btnRestart'), 'danger', function () {
-        if (window.confirm(t('restartConfirm'))) { clearWallet(); go(1); }
-      }));
+        // Start over = new wallet from scratch: also forget the collected entropy.
+        if (window.confirm(t('restartConfirm'))) { clearWallet(); pool.reset(); state.skipped = false; go(1); }
+      }, 'restart'));
     }
     var notes = [];
     if (state.step === 2 && state.skipped) notes.push(el('p', { class: 'banner banner-warn' }, t('entSkipped')));
