@@ -99,7 +99,10 @@ async function testChromium(b, url) {
     ], 180000);
     const status = (out.match(/data-selftest="(\w+)"/) || [])[1] || 'none';
     const title = (out.match(/<title>([^<]*)<\/title>/) || [])[1] || '';
-    const problems = err.split(/\r?\n/).filter((l) => /CONSOLE|Content Security Policy|Refused|Uncaught/i.test(l)).filter(notExpected);
+    const lines = err.split(/\r?\n/);
+    const problems = lines.filter((l) => /CONSOLE|Content Security Policy|Refused|Uncaught/i.test(l)).filter(notExpected);
+    // Nothing came back at all: show why the browser gave up (last stderr lines).
+    if (!out.trim()) problems.push('no output; stderr tail:', ...lines.filter((l) => l.trim()).slice(-8));
     return { status, title, problems };
   } finally {
     rmSync(profile, { recursive: true, force: true });
