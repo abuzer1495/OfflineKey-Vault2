@@ -13,6 +13,7 @@
     "@scure/base": "2.4.0",
     "@scure/bip32": "2.4.0",
     "@scure/bip39": "2.4.0",
+    "dejavu-fonts-ttf": "2.37.3",
     "jspdf": "4.2.1",
     "qrcode-generator": "2.0.4"
   },

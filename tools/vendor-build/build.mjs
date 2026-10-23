@@ -15,6 +15,9 @@
  *                         exposing window.WGVendor (see entry.js)
  *   vendor/jspdf.umd.js   copied byte-for-byte from the jspdf npm package
  *   vendor/qrcode.js      copied byte-for-byte from the qrcode-generator package
+ *   vendor/dejavu-fonts.js  DejaVu Sans Mono (regular + bold) TTF files as base64,
+ *                         exposed as window.WGFonts for jsPDF (Unicode text in PDFs)
+ *   vendor/DejaVu-LICENSE.txt  the font license, copied verbatim
  *   vendor/SHA256SUMS     sha256 of every vendor file (sha256sum -c compatible)
  *   vendor/VENDOR.md      human-readable provenance table
  *
@@ -50,6 +53,7 @@ function sha256File(path) {
 const bundled = ['@noble/curves', '@noble/hashes', '@noble/ciphers', '@scure/base', '@scure/bip32', '@scure/bip39'].map(pkgInfo);
 const jspdf = pkgInfo('jspdf');
 const qrcode = pkgInfo('qrcode-generator');
+const dejavu = pkgInfo('dejavu-fonts-ttf');
 const esbuildInfo = pkgInfo('esbuild');
 
 const versions = Object.fromEntries(bundled.map((p) => [p.name, p.version]));
@@ -88,8 +92,34 @@ await build({
 copyFileSync(join(here, 'node_modules/jspdf/dist/jspdf.umd.js'), join(vendorDir, 'jspdf.umd.js'));
 copyFileSync(join(here, 'node_modules/qrcode-generator/dist/qrcode.js'), join(vendorDir, 'qrcode.js'));
 
-// ---- 3. Checksums + provenance ---------------------------------------------
-const files = ['wg-crypto.js', 'jspdf.umd.js', 'qrcode.js'];
+// ---- 3. Fonts for jsPDF ------------------------------------------------------
+// jsPDF's built-in fonts only cover WinAnsi; Turkish letters, accented BIP39
+// words and box-drawing need an embedded Unicode TTF.
+{
+  const ttf = (f) => readFileSync(join(here, 'node_modules/dejavu-fonts-ttf/ttf', f)).toString('base64');
+  const js = [
+    '/*',
+    ' * vendor/dejavu-fonts.js  --  GENERATED FILE, DO NOT EDIT BY HAND.',
+    ' * DejaVu Sans Mono ' + dejavu.version + ' (regular, bold) from npm dejavu-fonts-ttf, base64-encoded TTF.',
+    ' * License: Bitstream Vera / DejaVu public-domain changes, see vendor/DejaVu-LICENSE.txt.',
+    ' * Exposes one read-only global: window.WGFonts = { mono: "<base64>", monoBold: "<base64>" }.',
+    ' */',
+    '(function () {',
+    "  'use strict';",
+    '  var fonts = Object.freeze({',
+    "    mono: '" + ttf('DejaVuSansMono.ttf') + "',",
+    "    monoBold: '" + ttf('DejaVuSansMono-Bold.ttf') + "'",
+    '  });',
+    "  Object.defineProperty(window, 'WGFonts', { value: fonts, writable: false, configurable: false, enumerable: true });",
+    '})();',
+    '',
+  ].join('\n');
+  writeFileSync(join(vendorDir, 'dejavu-fonts.js'), js);
+  copyFileSync(join(here, 'node_modules/dejavu-fonts-ttf/LICENSE'), join(vendorDir, 'DejaVu-LICENSE.txt'));
+}
+
+// ---- 4. Checksums + provenance ---------------------------------------------
+const files = ['wg-crypto.js', 'jspdf.umd.js', 'qrcode.js', 'dejavu-fonts.js', 'DejaVu-LICENSE.txt'];
 const sums = files.map((f) => ({ file: f, sha256: sha256File(join(vendorDir, f)) }));
 writeFileSync(join(vendorDir, 'SHA256SUMS'), sums.map((s) => s.sha256 + '  ' + s.file).join('\n') + '\n');
 
@@ -105,12 +135,14 @@ const md = [
   '| `wg-crypto.js` | `' + sums[0].sha256 + '` | esbuild ' + esbuildInfo.version + ' bundle of the packages below |',
   '| `jspdf.umd.js` | `' + sums[1].sha256 + '` | verbatim `jspdf@' + jspdf.version + '/dist/jspdf.umd.js` |',
   '| `qrcode.js` | `' + sums[2].sha256 + '` | verbatim `qrcode-generator@' + qrcode.version + '/dist/qrcode.js` |',
+  '| `dejavu-fonts.js` | `' + sums[3].sha256 + '` | base64 of `dejavu-fonts-ttf@' + dejavu.version + '/ttf/DejaVuSansMono{,-Bold}.ttf` |',
+  '| `DejaVu-LICENSE.txt` | `' + sums[4].sha256 + '` | verbatim `dejavu-fonts-ttf@' + dejavu.version + '/LICENSE` |',
   '',
   '## Packages',
   '',
   '| Package | Version | License | npm integrity |',
   '|---|---|---|---|',
-  ...[...bundled, jspdf, qrcode].map((p) => '| ' + p.name + ' | ' + p.version + ' | ' + p.license + ' | `' + p.integrity + '` |'),
+  ...[...bundled, jspdf, qrcode, dejavu].map((p) => '| ' + p.name + ' | ' + p.version + ' | ' + p.license + ' | `' + p.integrity + '` |'),
   '',
   '## Verify',
   '',
