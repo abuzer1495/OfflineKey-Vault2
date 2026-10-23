@@ -19,14 +19,28 @@
 
   var el = WG.dom.el;
   var t = WG.i18n.t;
+  var help = WG.help.button;     // small "?" button with a plain-language explanation
 
   var HIDDEN = '•••• •••• •••• ••••';
+
+  /** Which help text explains an item, by its label key. */
+  var HELP_FOR = {
+    lblAddress: 'address', lblPublicKey: 'publicKey', lblTaprootOutputKey: 'publicKey', lblStakeAddress: 'stake',
+    lblZpub: 'watch', lblXpub: 'watch', lblAcctXvk: 'watch', lblViewKey: 'watch',
+    lblWif: 'privateKey', lblWifTaproot: 'privateKey', lblPrivateKeyHex: 'privateKey', lblSolanaSecret: 'privateKey',
+    lblStellarSecret: 'privateKey', lblSpendKey: 'privateKey', lblMoneroMnemonic: 'mnemonic', lblBip38: 'bip38key',
+  };
+
+  /** Item label with its help button. */
+  function label(labelKey) {
+    return el('span', { class: 'label' }, t(labelKey), help(HELP_FOR[labelKey] || 'wallet'));
+  }
 
   /**
    * A secret value block. The value is written into the DOM only while
    * shown, and removed again on "Hide" (not merely blurred).
    */
-  function secretBlock(label, value, withQr) {
+  function secretBlock(labelKey, value, withQr) {
     var text = el('div', { class: 'secret-value mono muted' }, HIDDEN);
     var qrSlot = el('div', { class: 'qr-slot' });
     var shown = false;
@@ -39,13 +53,13 @@
       WG.dom.clear(qrSlot);
       if (shown && withQr) qrSlot.appendChild(sizedQr(value, 150));
     });
-    return el('div', { class: 'item secret' }, el('div', { class: 'item-head' }, el('span', { class: 'label' }, label), btn), text, qrSlot);
+    return el('div', { class: 'item secret' }, el('div', { class: 'item-head' }, label(labelKey), btn), text, qrSlot);
   }
 
   /** A public value block (always visible) with an optional QR. */
-  function publicBlock(label, value, withQr) {
+  function publicBlock(labelKey, value, withQr) {
     return el('div', { class: 'item public' },
-      el('div', { class: 'item-head' }, el('span', { class: 'label' }, label)),
+      el('div', { class: 'item-head' }, label(labelKey)),
       el('div', { class: 'mono value' }, value),
       withQr ? el('div', { class: 'qr-slot' }, sizedQr(value, 150)) : null);
   }
@@ -85,11 +99,11 @@
     var coin = WG.coins.get(r.coin);
     var where = r.coin === 'xmr' ? t('ownSeed') : (r.path ? r.path : t('singleKey'));
     return el('article', { class: 'coin-card' },
-      el('h3', null, r.name + ' (' + r.symbol + ')'),
+      el('h3', null, r.name + ' (' + r.symbol + ')', help('coin_' + r.coin)),
       el('p', { class: 'muted small' }, variantLabel(r) + ' · ' + where),
-      r.publics.map(function (p) { return publicBlock(t(p.labelKey), p.value, p.qr); }),
-      r.watch.map(function (p) { return publicBlock(t(p.labelKey), p.value, p.qr); }),
-      r.secrets.map(function (p) { return secretBlock(t(p.labelKey), p.value, p.qr); }),
+      r.publics.map(function (p) { return publicBlock(p.labelKey, p.value, p.qr); }),
+      r.watch.map(function (p) { return publicBlock(p.labelKey, p.value, p.qr); }),
+      r.secrets.map(function (p) { return secretBlock(p.labelKey, p.value, p.qr); }),
       r.secrets.length || r.coin === 'xmr' ? null : el('p', { class: 'muted small' }, t(set.mode === 'slip39' ? 'backupIsShares' : 'backupIsMnemonic')),
       el('p', { class: 'muted small' }, t('compatWallets') + ' ' + coin.wallets),
       r.notes.map(function (n) { return el('p', { class: 'warn small' }, t(n)); }));
@@ -103,25 +117,25 @@
   function create(set, opts) {
     var created = new Date(set.createdAt);
     var section = el('section', { class: 'card result', id: 'result' });
-    section.appendChild(el('h2', null, t('resTitle')));
+    section.appendChild(el('h2', null, t('resTitle'), help('wallet')));
     section.appendChild(el('p', { class: 'muted small' }, t('resCreated', { date: created.toLocaleString() })));
     section.appendChild(el('ul', { class: 'warn-list' }, ['resWarn1', 'resWarn2', 'resWarn3', 'resWarn4'].map(function (k) { return el('li', null, t(k)); })));
     section.appendChild(el('details', null,
-      el('summary', null, t('resChecks', { n: set.checks.length })),
+      el('summary', null, t('resChecks', { n: set.checks.length }), help('checks')),
       el('ul', { class: 'test-list' }, set.checks.map(function (c) { return el('li', { class: c.ok ? 'ok' : 'fail' }, (c.ok ? '✓ ' : '✗ ') + c.what); }))));
 
     // Backup
     if (set.mnemonic) {
       var words = WG.bip39.words(set.mnemonic);
       section.appendChild(el('div', { class: 'backup' },
-        el('h3', null, t('resMnemonic', { n: words.length, lang: set.language })),
+        el('h3', null, t('resMnemonic', { n: words.length, lang: set.language }), help('mnemonic')),
         set.diceOnly ? el('p', { class: 'muted small' }, t('resDiceOnly')) : null,
         wordGrid(words),
         set.hasPassphrase ? el('p', { class: 'warn' }, t('resHasPass')) : null));
     }
     if (set.shares) {
       section.appendChild(el('div', { class: 'backup' },
-        el('h3', null, t('resShares', { m: set.slip39.threshold, n: set.slip39.count })),
+        el('h3', null, t('resShares', { m: set.slip39.threshold, n: set.slip39.count }), help('shares')),
         el('p', { class: 'muted small' }, t('resSharesHelp')),
         set.shares.map(function (sh, i) {
           return el('div', { class: 'share' }, el('h4', null, t('resShare', { i: i + 1, n: set.shares.length, m: set.slip39.threshold })), wordGrid(sh.split(' ')));
@@ -134,7 +148,7 @@
 
     var clearBtn = el('button', { type: 'button', class: 'danger' }, t('resClear'));
     clearBtn.addEventListener('click', function () { if (window.confirm(t('resClearConfirm'))) opts.onClear(); });
-    section.appendChild(el('div', { class: 'input-row' }, clearBtn));
+    section.appendChild(el('div', { class: 'input-row' }, clearBtn, help('clear')));
     return { element: section, destroy: function () {} };
   }
 

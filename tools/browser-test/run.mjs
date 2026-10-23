@@ -19,7 +19,7 @@
  *   Firefox:  WebDriver BiDi over WebSocket (no --dump-dom in Firefox).
  *   Firefox also runs the full UI flow in smoke.js (entropy -> generate -> PDF);
  *   with WG_SAMPLE_DIR=<dir> it writes the sample PDFs of samples.js there,
- *   with WG_SHOT_DIR=<dir> full-page screenshots of step 1 and step 4.
+ *   with WG_SHOT_DIR=<dir> full-page screenshots of step 1, a help dialog and step 4.
  *
  * Needs only Node.js >= 22 (global WebSocket); no npm packages.
  */
@@ -161,12 +161,18 @@ async function testFirefox(b, url) {
         writeFileSync(join(process.env.WG_SHOT_DIR, name + '.png'), Buffer.from(r.data, 'base64'));
       };
       await shot('step1');
+      if (process.env.WG_SHOT_DIR) {
+        // One open help dialog (the 5th "?" on step 1: the threshold selector).
+        await send('script.evaluate', { expression: "document.querySelectorAll('button.help')[4].click()", target: { context }, awaitPromise: false });
+        await shot('help');
+        await send('script.evaluate', { expression: "document.querySelector('dialog.help-dialog').close()", target: { context }, awaitPromise: false });
+      }
       // Full user flow: entropy -> all coins -> generate -> PDF (see smoke.js).
       const smoke = JSON.parse((await send('script.evaluate', {
         expression: readFileSync(join(here, 'smoke.js'), 'utf8'), target: { context }, awaitPromise: true,
       })).result.value);
       await shot('step4');
-      if (smoke.error || smoke.coinCards !== 10 || !smoke.checksOk || !smoke.revealOk || !smoke.dragOk || !smoke.typeOk || !smoke.pdfMsg || !smoke.restartOk) problems.push('ui flow: ' + JSON.stringify(smoke));
+      if (smoke.error || smoke.coinCards !== 10 || !smoke.checksOk || !smoke.revealOk || !smoke.dragOk || !smoke.typeOk || !smoke.pdfMsg || !smoke.restartOk || smoke.helpMissing.length || smoke.helpButtons < 60) problems.push('ui flow: ' + JSON.stringify(smoke));
       // Optional sample PDFs for visual review.
       if (process.env.WG_SAMPLE_DIR) {
         const samples = JSON.parse((await send('script.evaluate', {

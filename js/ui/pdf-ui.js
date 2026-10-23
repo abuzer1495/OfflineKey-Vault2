@@ -19,6 +19,7 @@
 
   var el = WG.dom.el;
   var t = WG.i18n.t;
+  var help = WG.help.button;     // small "?" button with a plain-language explanation
 
   /** Form fields: [key, type, i18n label, extra]. Types: num, color, check, select. */
   var FIELDS = [
@@ -77,7 +78,7 @@
       input = el('input', { type: 'checkbox', id: id, checked: layout[key] ? 'checked' : null });
       input.addEventListener('change', function () { layout[key] = input.checked; onChange(); });
       inputs[key] = input;
-      return el('label', { class: 'check', for: id }, input, ' ', t(f[2]));
+      return el('label', { class: 'check', for: id }, input, ' ', t(f[2]), help('pdf_' + key));
     } else {
       var x = f[3] || { min: 0, max: 300, step: 0.1 };
       input = el('input', { type: type === 'color' ? 'color' : 'number', id: id, min: x.min, max: x.max, step: x.step });
@@ -88,7 +89,7 @@
       });
     }
     inputs[key] = input;
-    return el('label', { class: 'field', for: id }, el('span', null, t(f[2])), input);
+    return el('label', { class: 'field', for: id }, el('span', null, t(f[2]), help('pdf_' + key)), input);
   }
 
   /**
@@ -125,7 +126,7 @@
         if (!input.files[0]) { layout[key] = null; changed(); return; }
         loadImage(input.files[0]).then(function (data) { layout[key] = data; changed(); }, function (e) { msg.textContent = e.message; });
       });
-      return el('label', { class: 'field', for: 'pdf-' + key }, el('span', null, t(label)), input);
+      return el('label', { class: 'field', for: 'pdf-' + key }, el('span', null, t(label), help('pdf_' + key)), input);
     }
 
     button.addEventListener('click', function () {
@@ -140,12 +141,12 @@
     });
 
     var section = el('section', { class: 'card pdf', id: 'pdf' },
-      el('h2', null, t('pdfTitle')),
+      el('h2', null, t('pdfTitle'), help('print')),
       el('p', { class: 'muted small' }, t('pdfIntro')),
-      el('div', { class: 'preview-wrap' }, preview.element, el('p', { class: 'muted small' }, t('prevHint'))),
+      el('div', { class: 'preview-wrap' }, preview.element, el('p', { class: 'muted small' }, t('prevHint'), help('preview'))),
       el('div', { class: 'form-grid' }, fields, bgInput('bgFront', 'pdfBgFront'), bgInput('bgBack', 'pdfBgBack')),
       el('p', { class: 'warn small' }, t('pdfWarn')),
-      el('div', { class: 'generate-row' }, button), msg);
+      el('div', { class: 'generate-row' }, button, help('pdfBuild')), msg);
     check();
     return { element: section, destroy: function () {} };
   }

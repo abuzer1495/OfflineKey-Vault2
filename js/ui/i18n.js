@@ -30,6 +30,8 @@
       fullTests: 'Tüm testleri çalıştır (tests/test.html)',
       vendorTitle: 'Kullanılan kütüphaneler',
       error: 'Hata',
+      helpLabel: 'Yardım: bu ne işe yarar?',
+      helpClose: 'Kapat',
       words: 'kelime',
       footer: 'Açık kaynak, MIT lisansı. Hiçbir veri ağa gönderilmez.',
 
@@ -270,6 +272,8 @@
       fullTests: 'Run the full test suite (tests/test.html)',
       vendorTitle: 'Bundled libraries',
       error: 'Error',
+      helpLabel: 'Help: what is this?',
+      helpClose: 'Close',
       words: 'words',
       footer: 'Open source, MIT license. No data is ever sent to the network.',
 

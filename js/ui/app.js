@@ -59,6 +59,11 @@
     return b;
   }
 
+  /** A navigation button together with its "?" help button. */
+  function navItem(btn, helpKey) {
+    return el('span', { class: 'nav-item' }, btn, WG.help.button(helpKey));
+  }
+
   /** Self-test status (a single line once everything passed). */
   function viewSelftest() {
     var r = state.selftest;
@@ -66,7 +71,8 @@
     var failed = r.results.filter(function (x) { return !x.ok; });
     return el('section', { class: 'card selftest' },
       el('p', { class: failed.length ? 'status-bad' : 'status-good' },
-        failed.length ? t('selftestFailed', { failed: failed.length }) : '✓ ' + t('selftestPassed', { passed: r.passed, total: r.total })),
+        failed.length ? t('selftestFailed', { failed: failed.length }) : '✓ ' + t('selftestPassed', { passed: r.passed, total: r.total }),
+        WG.help.button('selftest')),
       el('details', failed.length ? { open: 'open' } : null,
         el('summary', null, t('selftestDetails')),
         el('ul', { class: 'test-list' }, r.results.map(function (x) {
@@ -95,10 +101,10 @@
       var refresh = function () { apply.disabled = pool.stats().creditedBits < state.threshold; };
       refresh();
       unsubscribe = pool.onChange(function () { requestAnimationFrame(refresh); });
-      nav.appendChild(button(t('entSkip'), null, function () {
+      nav.appendChild(navItem(button(t('entSkip'), null, function () {
         if (window.confirm(t('entSkipConfirm'))) { state.skipped = true; go(2); }
-      }, 'ent-skip'));
-      nav.appendChild(apply);
+      }, 'ent-skip'), 'skip'));
+      nav.appendChild(navItem(apply, 'apply'));
     } else if (state.step === 2) {
       panel = WG.generatorUi.create(pool, {
         settings: state.settings,
@@ -111,19 +117,19 @@
         },
         onError: function (e) { state.error = t('genError', { msg: e.message }); render(); },
       });
-      nav.appendChild(button('← ' + t('stepEntropy'), null, function () { go(1); }));
-      if (state.wallet) nav.appendChild(button(t('stepWallet') + ' →', null, function () { go(3); }));
+      nav.appendChild(navItem(button('← ' + t('stepEntropy'), null, function () { go(1); }), 'navBack'));
+      if (state.wallet) nav.appendChild(navItem(button(t('stepWallet') + ' →', null, function () { go(3); }), 'navForward'));
     } else if (state.step === 3) {
       panel = WG.resultUi.create(state.wallet, { onClear: function () { clearWallet(); go(2); } });
-      nav.appendChild(button('← ' + t('stepSettings'), null, function () { go(2); }));
-      nav.appendChild(button(t('stepPrint') + ' →', 'primary big', function () { go(4); }, 'to-print'));
+      nav.appendChild(navItem(button('← ' + t('stepSettings'), null, function () { go(2); }), 'navBack'));
+      nav.appendChild(navItem(button(t('stepPrint') + ' →', 'primary big', function () { go(4); }, 'to-print'), 'toPrint'));
     } else {
       panel = WG.pdfUi.create(state.wallet, state.layout);
-      nav.appendChild(button('← ' + t('stepWallet'), null, function () { go(3); }));
-      nav.appendChild(button(t('btnRestart'), 'danger', function () {
+      nav.appendChild(navItem(button('← ' + t('stepWallet'), null, function () { go(3); }), 'navBack'));
+      nav.appendChild(navItem(button(t('btnRestart'), 'danger', function () {
         // Start over = new wallet from scratch: also forget the collected entropy.
         if (window.confirm(t('restartConfirm'))) { clearWallet(); pool.reset(); state.skipped = false; go(1); }
-      }, 'restart'));
+      }, 'restart'), 'restart'));
     }
     var notes = [];
     if (state.step === 2 && state.skipped) notes.push(el('p', { class: 'banner banner-warn' }, t('entSkipped')));
@@ -154,14 +160,14 @@
     var v = V.versions;
     WG.dom.append(WG.dom.clear(document.getElementById('app')), [
       el('header', null,
-        el('div', { class: 'header-row' }, el('h1', null, t('appTitle')), langBtn),
+        el('div', { class: 'header-row' }, el('h1', null, t('appTitle')), navItem(langBtn, 'lang')),
         el('p', { class: 'muted' }, t('appSubtitle') + ' v' + WG.version)),
-      el('div', { class: 'banner ' + (state.online ? 'banner-warn' : 'banner-ok'), role: 'status' }, state.online ? t('netOnline') : t('netOffline')),
+      el('div', { class: 'banner ' + (state.online ? 'banner-warn' : 'banner-ok'), role: 'status' }, state.online ? t('netOnline') : t('netOffline'), WG.help.button('offline')),
       viewSelftest(),
       healthy ? viewStepper() : null,
       healthy ? el('main', null, viewStep()) : null,
       el('footer', { class: 'muted' },
-        el('details', null, el('summary', null, t('vendorTitle')),
+        el('details', null, el('summary', null, t('vendorTitle'), WG.help.button('vendor')),
           el('ul', null, Object.keys(v).map(function (name) { return el('li', null, name + ' ' + v[name]); }))),
         el('p', null, t('footer'))),
     ]);

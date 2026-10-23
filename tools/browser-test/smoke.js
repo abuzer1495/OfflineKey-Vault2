@@ -14,7 +14,9 @@
  *     7. press "Create and download PDF" -> success message
  *     8. "Clear and start over" -> back to step 1 with the meter at 0, and
  *        one pointer move adds exactly 0.5 bit (no duplicate listeners)
- *   Returns a JSON string { coinCards, checksOk, revealOk, dragOk, typeOk, pdfMsg, restartOk, error }.
+ *   On steps 1-4 every "?" help button is clicked: its dialog must show a
+ *   real explanation, and TR/EN help texts must cover the same keys.
+ *   Returns a JSON string { coinCards, checksOk, revealOk, dragOk, typeOk, pdfMsg, restartOk, helpButtons, helpMissing, error }.
  */
 (async () => {
   const $ = (id) => document.getElementById(id);
@@ -23,14 +25,29 @@
     for (let i = 0; i < ms / 100; i++) { const v = fn(); if (v) return v; await new Promise((r) => setTimeout(r, 100)); }
     return null;
   };
-  const out = {};
+  const out = { helpButtons: 0, helpMissing: [] };
+  // Click every visible "?" and check that its dialog holds a real sentence.
+  const checkHelp = () => {
+    document.querySelectorAll('#app button.help').forEach((b) => {
+      b.click();
+      const d = document.querySelector('dialog.help-dialog');
+      const text = d.querySelector('.help-body').textContent;
+      if (!d.open || text.length < 30 || !/ /.test(text)) out.helpMissing.push(text.slice(0, 40));
+      d.close();
+      out.helpButtons++;
+    });
+  };
+  const tr = Object.keys(WG.helpTexts.tr).sort().join(), en = Object.keys(WG.helpTexts.en).sort().join();
+  if (tr !== en) out.helpMissing.push('TR/EN help keys differ');
   try {
+    checkHelp();                           // step 1
     $('dice-input').value = '3615244326155142363125642351'.repeat(4).slice(0, 94);
     $('dice-add').click();
     await frame();
     if ($('ent-apply').disabled) throw new Error('apply disabled');
     $('ent-apply').click();
     await frame();
+    checkHelp();                           // step 2 (default options)
 
     for (const id of ['btc', 'ltc', 'doge', 'eth', 'trx', 'xrp', 'sol', 'xlm', 'ada', 'xmr']) {
       const box = $('coin-' + id);
@@ -42,6 +59,7 @@
     await until(() => document.querySelector('.result .coin-card'), 30000);
     out.coinCards = document.querySelectorAll('.result .coin-card').length;
     out.checksOk = document.querySelectorAll('.result .test-list .fail').length === 0 && document.querySelectorAll('.result .test-list .ok').length > 0;
+    checkHelp();                           // step 3
 
     // Secrets must not be in the DOM until "Show", and must leave it on "Hide".
     const secret = document.querySelector('.result .item.secret');
@@ -54,6 +72,7 @@
 
     $('to-print').click();
     await frame();
+    checkHelp();                           // step 4
     // Drag the card-width line 20 px to the right.
     const width0 = $('pdf-cardWidth').value;
     const line = document.querySelectorAll('.handle-x')[1];   // x-handles in order: marginLeft, cardWidth, gap

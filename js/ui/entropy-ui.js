@@ -26,6 +26,7 @@
 
   var el = WG.dom.el;
   var t = WG.i18n.t;
+  var help = WG.help.button;     // small "?" button with a plain-language explanation
   var E = WG.entropy;
 
   /** Display order of sources in the breakdown table. */
@@ -128,36 +129,36 @@
 
     // ---- Assemble ------------------------------------------------------------
     var element = el('section', { class: 'card entropy' },
-      el('h2', null, t('entTitle')),
+      el('h2', null, t('entTitle'), help('entropy')),
       el('p', { class: 'muted' }, t('entIntro')),
-      el('div', { class: 'meter-row' }, meter, meterText, el('label', { for: 'threshold' }, t('entThreshold')), select),
+      el('div', { class: 'meter-row' }, meter, meterText, el('label', { for: 'threshold' }, t('entThreshold')), select, help('threshold')),
       readyText,
 
-      el('h3', null, t('entPadTitle')),
+      el('h3', null, t('entPadTitle'), help('pad')),
       el('p', { class: 'muted small' }, t('entPadHint')),
       canvas,
 
-      el('h3', null, t('entDiceTitle')),
+      el('h3', null, t('entDiceTitle'), help('dice')),
       el('p', { class: 'muted small' }, t('entDiceHint')),
       el('div', { class: 'dice-row' }, diceButtons),
-      el('div', { class: 'input-row' }, diceInput, diceAdd),
+      el('div', { class: 'input-row' }, diceInput, diceAdd, help('diceAdd')),
       diceMsg,
       diceOnlyInfo,
 
-      el('h3', null, t('entCoinTitle')),
+      el('h3', null, t('entCoinTitle'), help('coinFlip')),
       el('div', { class: 'input-row' }, heads, tails),
 
-      el('h3', null, t('entTextTitle')),
+      el('h3', null, t('entTextTitle'), help('text')),
       el('p', { class: 'muted small' }, t('entTextHint')),
-      el('div', { class: 'input-row' }, textArea, textAdd),
+      el('div', { class: 'input-row' }, textArea, textAdd, help('mix')),
 
       el('details', null,
-        el('summary', null, t('entBreakdown')),
+        el('summary', null, t('entBreakdown'), help('breakdown')),
         el('table', { class: 'results' },
           el('thead', null, el('tr', null, el('th', null, t('entSource')), el('th', { class: 'num' }, t('entEvents')), el('th', { class: 'num' }, t('entBits')))),
           tbody),
         el('p', { class: 'muted small' }, t('entCreditNote'))),
-      el('div', { class: 'input-row' }, reset));
+      el('div', { class: 'input-row' }, reset, help('resetEntropy')));
 
     /** Copy pool statistics into the existing nodes. */
     function update() {

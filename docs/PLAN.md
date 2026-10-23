@@ -198,6 +198,11 @@ Kullanıcı arayüzde ayrı ayrı açıp kapatabilir:
 - Hata düzeltmesi: "Temizle ve baştan başla" entropi havuzunu sıfırlamıyordu; sayaç eski değerden devam ediyordu. Artık havuz sıfırlanıyor; akış testi bunu ve tek fare hareketinin tam 0,5 bit eklediğini kontrol ediyor.
 - Kural: her sürüm GitHub release olarak yayımlanır (`tools/release/make-zip.mjs` + `gh release create`).
 
+### v0.3.0 (2026-10-23)
+- Her seçenek ve butonun yanında küçük "?" yardım butonu (`js/ui/help.js`, metinler `js/ui/help-texts.js`, TR/EN): kripto bilmeyen birine örnek ve benzetmeyle kısa açıklama; tek ortak `<dialog>`, metin `textContent` ile.
+- Akış testi 4 adımın her birinde ekrandaki bütün "?" butonlarına basıyor (124 buton), metinlerin dolu olduğunu ve TR/EN anahtarlarının aynı olduğunu kontrol ediyor.
+- Eski `monero-PDF-wallet-generator` yerel klasörü kullanıcının isteğiyle silindi (geçmiş `_backup` bundle'ında).
+
 ## 12. AI güvenlik denetim tarifnamesi
 
 Bkz. [`docs/AI_SECURITY_AUDIT.md`](AI_SECURITY_AUDIT.md).

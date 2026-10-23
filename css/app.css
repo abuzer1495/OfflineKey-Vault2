@@ -202,3 +202,36 @@ svg.page-preview .handle-line { stroke: #2563eb; }
 svg.page-preview .handle-x { cursor: ew-resize; }
 svg.page-preview .handle-y { cursor: ns-resize; }
 svg.page-preview .handle:hover .handle-line { stroke: #f26822; stroke-width: 1; }
+
+/* ---- Help "?" buttons and dialog (help.js) ------------------------------- */
+button.help {
+  /* a small round button, a few px larger than the surrounding text */
+  width: calc(1em + 6px);
+  height: calc(1em + 6px);
+  padding: 0;
+  margin: 0 0 0 6px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--accent);
+  font: 700 0.8em/1 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  vertical-align: middle;
+  flex: 0 0 auto;
+  cursor: help;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+button.help:hover, button.help:focus-visible { background: var(--accent); color: #fff; }
+.nav-item { display: inline-flex; align-items: center; }
+dialog.help-dialog {
+  max-width: min(520px, calc(100vw - 32px));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  padding: 18px 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+dialog.help-dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
+.help-body p { margin: 0 0 10px; line-height: 1.55; }
+.help-actions { text-align: right; }
+.input-row button.help, .meter-row button.help, .generate-row button.help { align-self: center; }

@@ -21,6 +21,7 @@
 
   var el = WG.dom.el;
   var t = WG.i18n.t;
+  var help = WG.help.button;     // small "?" button with a plain-language explanation
 
   /** Native names of BIP39 languages. */
   var LANG_NAMES = {
@@ -93,11 +94,11 @@
     return sel;
   }
 
-  /** Checkbox with label. */
-  function checkbox(id, checked, label, onChange) {
+  /** Checkbox with label and a help button. */
+  function checkbox(id, checked, label, onChange, helpKey) {
     var box = el('input', { type: 'checkbox', id: id, checked: checked ? 'checked' : null });
     box.addEventListener('change', function () { onChange(box.checked); });
-    return el('label', { class: 'check', for: id }, box, ' ', label);
+    return el('label', { class: 'check', for: id }, box, ' ', label, help(helpKey));
   }
 
   /** Password input bound to obj[key]. */
@@ -121,28 +122,28 @@
     /** Rebuild the panel content (cheap; called after structural changes). */
     function render() {
       WG.dom.clear(section);
-      section.appendChild(el('h2', null, t('genTitle')));
+      section.appendChild(el('h2', null, t('genTitle'), help('settings')));
 
       // Wallet type
-      var modes = [['bip39', t('modeBip39'), t('modeBip39Help')], ['slip39', t('modeSlip39'), t('modeSlip39Help')], ['single', t('modeSingle'), t('modeSingleHelp')]];
-      section.appendChild(el('fieldset', null, el('legend', null, t('genMode')),
+      var modes = [['bip39', t('modeBip39'), t('modeBip39Help'), 'modeBip39'], ['slip39', t('modeSlip39'), t('modeSlip39Help'), 'modeSlip39'], ['single', t('modeSingle'), t('modeSingleHelp'), 'modeSingle']];
+      section.appendChild(el('fieldset', null, el('legend', null, t('genMode'), help('mode')),
         modes.map(function (m) {
           var r = el('input', { type: 'radio', name: 'mode', id: 'mode-' + m[0], value: m[0], checked: s.mode === m[0] ? 'checked' : null });
           r.addEventListener('change', function () { s.mode = m[0]; render(); });
-          return el('div', { class: 'radio-row' }, el('label', { for: 'mode-' + m[0] }, r, ' ', el('strong', null, m[1])), el('p', { class: 'muted small' }, m[2]));
+          return el('div', { class: 'radio-row' }, el('label', { for: 'mode-' + m[0] }, r, ' ', el('strong', null, m[1]), help(m[3])), el('p', { class: 'muted small' }, m[2]));
         })));
 
       // Coins
-      section.appendChild(el('fieldset', null, el('legend', null, t('genCoins')),
+      section.appendChild(el('fieldset', null, el('legend', null, t('genCoins'), help('coins')),
         el('div', { class: 'coin-grid' }, WG.coins.list().map(function (c) {
           var allowed = coinAllowed(c, s.mode);
           var box = el('input', { type: 'checkbox', id: 'coin-' + c.id, checked: s.coins[c.id] && allowed ? 'checked' : null, disabled: allowed ? null : 'disabled' });
           box.addEventListener('change', function () { s.coins[c.id] = box.checked; render(); });
           var row = el('div', { class: 'coin-row' + (allowed ? '' : ' disabled') },
-            el('label', { for: 'coin-' + c.id }, box, ' ', el('strong', null, c.symbol), ' ', c.name));
+            el('label', { for: 'coin-' + c.id }, box, ' ', el('strong', null, c.symbol), ' ', c.name), help('coin_' + c.id));
           if (c.variants.length > 1 && allowed && s.coins[c.id] && !(c.id === 'btc' && s.mode === 'single' && s.bip38.enabled)) {
             row.appendChild(select('variant-' + c.id, c.variants.map(function (v) { return [v.id, t(v.labelKey)]; }), s.variants[c.id] || c.defaultVariant,
-              function (val) { s.variants[c.id] = val; update(); }));
+              function (val) { s.variants[c.id] = val; update(); }), help('variant'));
           }
           if (!allowed) row.appendChild(el('span', { class: 'muted small' }, t(c.needsEntropy ? 'coinNeedsBip39' : 'coinNoSingle')));
           return row;
@@ -153,22 +154,22 @@
       var opt = el('fieldset', null, el('legend', null, t('genOptions')));
       if (s.mode === 'bip39') {
         opt.appendChild(el('div', { class: 'input-row' },
-          el('label', { for: 'words' }, t('genWords')), select('words', [[12, '12'], [24, '24']], s.words, function (v) { s.words = parseInt(v, 10); update(); }),
-          el('label', { for: 'language' }, t('genLanguage')), select('language', WG.bip39.LANGUAGES.map(function (l) { return [l, LANG_NAMES[l]]; }), s.language, function (v) { s.language = v; render(); })));
+          el('label', { for: 'words' }, t('genWords')), select('words', [[12, '12'], [24, '24']], s.words, function (v) { s.words = parseInt(v, 10); update(); }), help('words'),
+          el('label', { for: 'language' }, t('genLanguage')), select('language', WG.bip39.LANGUAGES.map(function (l) { return [l, LANG_NAMES[l]]; }), s.language, function (v) { s.language = v; render(); }), help('language')));
         if (s.language !== 'english') opt.appendChild(el('p', { class: 'warn small' }, t('genLanguageWarn')));
-        opt.appendChild(checkbox('dice-only', s.diceOnly, t('genDiceOnly'), function (v) { s.diceOnly = v; render(); }));
+        opt.appendChild(checkbox('dice-only', s.diceOnly, t('genDiceOnly'), function (v) { s.diceOnly = v; render(); }, 'diceOnly'));
         if (s.diceOnly) opt.appendChild(el('p', { class: 'warn small' }, t('genDiceOnlyWarn', { need: WG.entropy.diceRollsNeeded(WG.bip39.WORDS_TO_BYTES[s.words]) })));
       }
       if (s.mode === 'slip39') {
         var nums = function (from, to) { var a = []; for (var i = from; i <= to; i++) a.push([i, String(i)]); return a; };
         opt.appendChild(el('div', { class: 'input-row' },
-          el('label', { for: 'slip-m' }, t('genSlipThreshold')), select('slip-m', nums(1, 16), s.slip39.threshold, function (v) { s.slip39.threshold = parseInt(v, 10); update(); }),
-          el('label', { for: 'slip-n' }, t('genSlipCount')), select('slip-n', nums(1, 16), s.slip39.count, function (v) { s.slip39.count = parseInt(v, 10); update(); }),
-          el('label', { for: 'slip-bits' }, t('genSlipBits')), select('slip-bits', [[16, '128 bit (20 ' + t('words') + ')'], [32, '256 bit (33 ' + t('words') + ')']], s.slip39.bytes, function (v) { s.slip39.bytes = parseInt(v, 10); update(); })));
+          el('label', { for: 'slip-m' }, t('genSlipThreshold')), select('slip-m', nums(1, 16), s.slip39.threshold, function (v) { s.slip39.threshold = parseInt(v, 10); update(); }), help('slipM'),
+          el('label', { for: 'slip-n' }, t('genSlipCount')), select('slip-n', nums(1, 16), s.slip39.count, function (v) { s.slip39.count = parseInt(v, 10); update(); }), help('slipN'),
+          el('label', { for: 'slip-bits' }, t('genSlipBits')), select('slip-bits', [[16, '128 bit (20 ' + t('words') + ')'], [32, '256 bit (33 ' + t('words') + ')']], s.slip39.bytes, function (v) { s.slip39.bytes = parseInt(v, 10); update(); }), help('slipBits')));
         opt.appendChild(el('p', { class: 'muted small' }, t('genSlipHelp')));
       }
       if (s.mode !== 'single') {
-        opt.appendChild(checkbox('use-pass', s.usePassphrase, t(s.mode === 'slip39' ? 'genPassSlip' : 'genPass'), function (v) { s.usePassphrase = v; render(); }));
+        opt.appendChild(checkbox('use-pass', s.usePassphrase, t(s.mode === 'slip39' ? 'genPassSlip' : 'genPass'), function (v) { s.usePassphrase = v; render(); }, 'passphrase'));
         if (s.usePassphrase) {
           opt.appendChild(el('div', { class: 'input-row' },
             password('pass1', s, 'passphrase', t('genPassPh'), update), password('pass2', s, 'passphrase2', t('genPassPh2'), update)));
@@ -178,7 +179,7 @@
       if (s.mode === 'single') {
         opt.appendChild(el('p', { class: 'muted small' }, t('genSingleHelp')));
         if (s.coins.btc) {
-          opt.appendChild(checkbox('bip38', s.bip38.enabled, t('genBip38'), function (v) { s.bip38.enabled = v; render(); }));
+          opt.appendChild(checkbox('bip38', s.bip38.enabled, t('genBip38'), function (v) { s.bip38.enabled = v; render(); }, 'bip38'));
           if (s.bip38.enabled) {
             opt.appendChild(el('div', { class: 'input-row' },
               password('bip38-1', s.bip38, 'password', t('genPassPh'), update), password('bip38-2', s.bip38, 'password2', t('genPassPh2'), update)));
@@ -193,7 +194,7 @@
       button = el('button', { type: 'button', class: 'primary big', id: 'generate' }, t('genButton'));
       button.addEventListener('click', run);
       status = el('p', { class: 'muted small', role: 'status' });
-      section.appendChild(el('div', { class: 'generate-row' }, button, status));
+      section.appendChild(el('div', { class: 'generate-row' }, button, help('generate'), status));
       section.appendChild(problemList);
       update();
     }

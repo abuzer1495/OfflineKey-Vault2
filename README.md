@@ -15,7 +15,10 @@ always gets its own 25-word seed.
 your own dice rolls, coin flips, mouse/touch movement and key timings; an
 optional verifiable "dice only" mode follows the Coldcard method.
 
-> Status: 0.1.0 pre-release. Read the safety notes below and test-restore
+Every option and button has a small **?** button that explains it in plain
+language, with an example and an everyday analogy — no crypto knowledge needed.
+
+> Status: pre-release. Read the safety notes below and test-restore
 > every wallet with a small amount before trusting it with real funds.
 
 ## Use
