@@ -136,6 +136,21 @@ async function testFirefox(b, url) {
       if (status === 'none') await new Promise((r) => setTimeout(r, 500));
     }
     const title = await evalStr('document.title');
+    // UI smoke test on the app page: commit 6 dice through the buffered input,
+    // flip one coin and expect 6 x 2.585 + 1 = 16.5 credited bits on the meter.
+    if (status === 'pass' && url.endsWith('/index.html')) {
+      const meter = (await send('script.evaluate', {
+        expression: `(async () => {
+          document.getElementById('dice-input').value = '1 2 3, 4 5 6';
+          document.getElementById('dice-add').click();
+          document.getElementById('coin-heads').click();
+          await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+          return document.querySelector('.meter-text').textContent;
+        })()`,
+        target: { context }, awaitPromise: true,
+      })).result.value;
+      if (!/^16 \/ 256 bit$/.test(meter)) problems.push('ui smoke: meter shows "' + meter + '", expected "16 / 256 bit"');
+    }
     await send('session.end', {}).catch(() => {});
     ws.close();
     return { status, title, problems };

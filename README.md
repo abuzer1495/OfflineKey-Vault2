@@ -1,6 +1,6 @@
 # kripto_wallet_offline_yet — Offline Paper Wallet Generator (in development)
 
-> **Status:** milestone M0 (skeleton). It does **not** generate wallets yet.
+> **Status:** milestone M1 (entropy collection). It does **not** generate wallets yet.
 > Successor of the retired `monero-PDF-wallet-generator` project (PHP/TCPDF, Monero only).
 > Roadmap: [docs/PLAN.md](docs/PLAN.md).
 
@@ -54,7 +54,7 @@ node tools/browser-test/run.mjs
 ## Türkçe özet
 
 Tek bir HTML dosyası açılarak tüm güncel tarayıcılarda tamamen çevrimdışı
-çalışan, taşınabilir kâğıt cüzdan üreticisi. **Şu an M0 iskelet aşamasında,
+çalışan, taşınabilir kâğıt cüzdan üreticisi. **Şu an M1 (entropi toplama) aşamasında,
 henüz cüzdan üretmez.** Kullanım: zip'i indir, aç, internet bağlantısını kes,
 `index.html` dosyasına çift tıkla. Tüm testler için `tests/test.html`.
 Yol haritası: [docs/PLAN.md](docs/PLAN.md). Önceki proje: emekliye ayrılan `monero-PDF-wallet-generator` (PHP, yalnızca Monero).

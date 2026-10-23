@@ -100,3 +100,40 @@ table.results tr.group th { background: var(--bg); padding-top: 12px; }
 pre { font-family: var(--mono); font-size: 0.85rem; white-space: pre-wrap; overflow-wrap: anywhere; }
 
 footer { margin-top: 32px; font-size: 0.9rem; }
+
+/* ---- Forms -------------------------------------------------------------- */
+h3 { font-size: 1rem; margin: 20px 0 4px; }
+.small { font-size: 0.88rem; margin: 2px 0 8px; }
+input[type="text"], textarea, select {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+}
+input[type="text"], textarea { flex: 1 1 220px; min-width: 0; font-family: var(--mono); }
+input:focus, textarea:focus, select:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.danger { color: var(--bad); }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+.input-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; margin: 6px 0; }
+.field-msg { min-height: 1.2em; margin: 2px 0; font-size: 0.88rem; color: var(--muted); }
+
+/* ---- Entropy panel ------------------------------------------------------ */
+.meter-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 12px 0 4px; }
+.meter-row meter { flex: 1 1 220px; height: 18px; }
+.meter-text { font-family: var(--mono); font-weight: 600; min-width: 10ch; }
+.ready { margin: 4px 0 0; font-weight: 600; }
+canvas.pad {
+  display: block;
+  width: 100%;
+  height: 180px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  cursor: crosshair;
+  touch-action: none;           /* finger movement feeds entropy instead of scrolling */
+}
+.dice-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+button.die { width: 44px; height: 44px; padding: 0; font-size: 1.15rem; font-weight: 700; }

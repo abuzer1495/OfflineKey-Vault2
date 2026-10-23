@@ -167,6 +167,13 @@ Kullanıcı arayüzde ayrı ayrı açıp kapatabilir:
 - Doğrulanan: `script-src 'self'` CSP'si Chrome, Edge ve Firefox'ta `file://` altında çalışıyor ve `fetch()` engelleniyor. Safari elle test edilecek.
 - Karar: kod yorumları İngilizce (açık kaynak erişimi için); arayüz TR/EN.
 
+### M1 — tamamlandı (2026-10-23)
+- `js/core/entropy-pool.js` (`WG.entropy`): uygulamadaki tek gizli rastgelelik kaynağı. absorb = SHA-512 zinciri; extract = HKDF-SHA512(taze CSPRNG 64 B ‖ havuz) + ratchet; `extract()` öz test geçmeden ve istenen minimum kredi yoksa çalışmaz.
+- Kaynaklar ve kredi: zar d6 2,585 bit, yazı-tura 1, fare/dokunma örneği 0,5 (≥10 ms ve ≥4 px aralıkla), tuş zamanlaması 1 (≥15 ms, tekrar yok, tuşun kendisi kaydedilmez), serbest metin / zamanlayıcı titreşimi 0.
+- Sadece zar modu (Coldcard uyumlu): SHA-256(atış rakamları). 128 bit için 50, 256 bit için **100** atış (99 atış = 255,9 bit olduğundan Coldcard'ın 99'u yerine katı ≥256 seçildi). Kullanılan atışlar silinir, tekrar kullanılamaz.
+- Arayüz: bit sayacı + eşik seçimi (128/256/512, vars. 256), fare/dokunma alanı, zar tamponu (düzeltilebilir, "Ekle" ile işlenir), yazı-tura, serbest metin, kaynak dağılımı, sıfırlama. Sayfa sabit bölmelerle çiziliyor; yazarken arayüz yeniden kurulmuyor.
+- 4 yeni kritik KAT (beklenen değerler Node.js crypto ile bağımsız hesaplandı) + 8 davranış testi → toplam 80 test, Chrome/Edge/Firefox'ta geçti. Firefox'ta arayüz duman testi (6 zar + 1 tura = 16 bit).
+
 ## 12. AI güvenlik denetim tarifnamesi — iskelet
 
 Kod bittiğinde gerçek yapıya göre yazılır; en az cümle, eksiksiz:

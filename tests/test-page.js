@@ -37,7 +37,11 @@
       el('td', { class: 'num' }, String(r.ms))));
   }
 
-  WG.selftest.run({ onResult: addRow }).then(function (rep) {
+  // Run the critical subset first (as index.html does) so that code guarded by
+  // WG.selftest.requireHealthy() - e.g. pool.extract() - is unlocked for the full run.
+  WG.selftest.run({ criticalOnly: true }).then(function () {
+    return WG.selftest.run({ onResult: addRow });
+  }).then(function (rep) {
     var ok = rep.failed === 0;
     document.title = ok ? 'PASS ' + rep.passed + '/' + rep.total : 'FAIL ' + rep.failed + '/' + rep.total;
     document.documentElement.setAttribute('data-selftest', ok && WG.selftest.isHealthy() ? 'pass' : 'fail');
