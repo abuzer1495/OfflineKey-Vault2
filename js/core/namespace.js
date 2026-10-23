@@ -31,7 +31,7 @@
   var WG = {};
 
   /** Application version shown in the UI and printed on generated cards. */
-  Object.defineProperty(WG, 'version', { value: '2.0.0-dev', enumerable: true });
+  Object.defineProperty(WG, 'version', { value: '0.1.0-dev', enumerable: true });
 
   /**
    * Register a module under WG[name].

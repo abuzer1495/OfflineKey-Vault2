@@ -137,3 +137,47 @@ canvas.pad {
 }
 .dice-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
 button.die { width: 44px; height: 44px; padding: 0; font-size: 1.15rem; font-weight: 700; }
+
+/* ---- Wallet settings (generator-ui.js) ----------------------------------- */
+fieldset { border: 1px solid var(--border); border-radius: var(--radius); margin: 12px 0; padding: 8px 12px; }
+legend { font-weight: 600; padding: 0 4px; }
+.radio-row label, label.check { cursor: pointer; }
+.radio-row p { margin: 0 0 8px 22px; }
+label.check { display: block; margin: 8px 0; }
+.coin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px 16px; }
+.coin-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.coin-row.disabled { opacity: 0.55; }
+.coin-row select { font-size: 0.85rem; padding: 2px 6px; }
+.warn { color: var(--warn); }
+.problems { color: var(--muted); font-size: 0.9rem; margin: 8px 0 0; }
+.generate-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+button.big { font-size: 1.05rem; padding: 10px 22px; }
+input[type="password"], input[type="number"] {
+  font: inherit; color: var(--text); background: var(--bg);
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 10px;
+}
+input[type="password"] { flex: 1 1 200px; min-width: 0; }
+
+/* ---- Result (result-ui.js) ----------------------------------------------- */
+.mono { font-family: var(--mono); overflow-wrap: anywhere; }
+.warn-list { color: var(--warn); padding-left: 20px; }
+.backup, .share { margin: 12px 0; }
+.word-grid { columns: 3 9rem; font-family: var(--mono); font-size: 1rem; margin: 8px 0; padding-left: 2.2em; }
+.word-grid li { break-inside: avoid; padding: 1px 0; }
+.masked { filter: blur(6px); user-select: none; -webkit-user-select: none; }
+.coin-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin: 12px 0; }
+.coin-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; background: var(--bg); }
+.coin-card h3 { margin-top: 0; }
+.item { margin: 10px 0; }
+.item-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.item .label { font-weight: 600; font-size: 0.9rem; }
+.item .value, .secret-value { font-size: 0.88rem; margin-top: 2px; }
+button.reveal { font-size: 0.8rem; padding: 2px 10px; }
+canvas.qr { display: block; margin-top: 6px; image-rendering: pixelated; border: 4px solid #fff; }
+
+/* ---- PDF panel (pdf-ui.js) ----------------------------------------------- */
+.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px 16px; margin: 12px 0; }
+label.field { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.92rem; }
+label.field input[type="number"] { width: 6.5em; }
+label.field input[type="file"] { max-width: 60%; font-size: 0.8rem; }
+.form-grid label.check { margin: 0; font-size: 0.92rem; }

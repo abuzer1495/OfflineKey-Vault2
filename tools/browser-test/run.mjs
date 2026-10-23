@@ -17,17 +17,20 @@
  *   tests/test.html also sets document.title to "PASS n/n" | "FAIL f/n".
  *   Chromium: --dump-dom after a virtual-time budget; console via stderr.
  *   Firefox:  WebDriver BiDi over WebSocket (no --dump-dom in Firefox).
+ *   Firefox also runs the full UI flow in smoke.js (entropy -> generate -> PDF);
+ *   with WG_SAMPLE_DIR=<dir> it writes the sample PDFs of samples.js there.
  *
  * Needs only Node.js >= 22 (global WebSocket); no npm packages.
  */
 
 import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const here = dirname(fileURLToPath(import.meta.url));
+const repo = resolve(here, '..', '..');
 const pages = ['index.html', 'tests/test.html'];
 const filter = (process.argv[2] || '').toLowerCase();
 
@@ -150,6 +153,18 @@ async function testFirefox(b, url) {
         target: { context }, awaitPromise: true,
       })).result.value;
       if (!/^16 \/ 256 bit$/.test(meter)) problems.push('ui smoke: meter shows "' + meter + '", expected "16 / 256 bit"');
+      // Full user flow: entropy -> all coins -> generate -> PDF (see smoke.js).
+      const smoke = JSON.parse((await send('script.evaluate', {
+        expression: readFileSync(join(here, 'smoke.js'), 'utf8'), target: { context }, awaitPromise: true,
+      })).result.value);
+      if (smoke.error || smoke.coinCards !== 10 || !smoke.checksOk || !smoke.pdfMsg) problems.push('ui flow: ' + JSON.stringify(smoke));
+      // Optional sample PDFs for visual review.
+      if (process.env.WG_SAMPLE_DIR) {
+        const samples = JSON.parse((await send('script.evaluate', {
+          expression: readFileSync(join(here, 'samples.js'), 'utf8'), target: { context }, awaitPromise: true,
+        })).result.value);
+        for (const [name, data] of Object.entries(samples)) writeFileSync(join(process.env.WG_SAMPLE_DIR, name + '.pdf'), Buffer.from(data, 'base64'));
+      }
     }
     await send('session.end', {}).catch(() => {});
     ws.close();

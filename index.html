@@ -28,8 +28,11 @@
     <noscript>JavaScript is required. / JavaScript gereklidir.</noscript>
   </div>
 
-  <!-- 1. Third-party crypto (audited noble/scure libraries) -> window.WGVendor -->
-  <script src="vendor/wg-crypto.js"></script>
+  <!-- 1. Third-party code (pinned, see vendor/VENDOR.md) -->
+  <script src="vendor/wg-crypto.js"></script>      <!-- noble/scure crypto -> window.WGVendor -->
+  <script src="vendor/qrcode.js"></script>         <!-- QR code matrix -->
+  <script src="vendor/jspdf.umd.js"></script>      <!-- PDF writer -->
+  <script src="vendor/dejavu-fonts.js"></script>   <!-- Unicode font for the PDF -->
 
   <!-- 2. Core: namespace, byte helpers, self-test registry + known-answer tests -->
   <script src="js/core/namespace.js"></script>
@@ -42,10 +45,36 @@
   <script src="js/core/entropy-sources.js"></script>
   <script src="js/core/selftest-entropy.js"></script>
 
-  <!-- 4. User interface -->
+  <!-- 4. Wordlists, key derivation, coins (+ one start-up KAT per coin) -->
+  <script src="js/data/monero-wordlist-english.js"></script>
+  <script src="js/data/slip39-wordlist.js"></script>
+  <script src="js/derive/bip39.js"></script>
+  <script src="js/derive/hd.js"></script>
+  <script src="js/derive/cardano-keys.js"></script>
+  <script src="js/coins/registry.js"></script>
+  <script src="js/coins/encode.js"></script>
+  <script src="js/coins/bitcoin-family.js"></script>
+  <script src="js/coins/account-coins.js"></script>
+  <script src="js/coins/ed25519-coins.js"></script>
+  <script src="js/coins/cardano.js"></script>
+  <script src="js/coins/monero.js"></script>
+  <script src="js/coins/selftest-coins.js"></script>
+
+  <!-- 5. Optional security features and the wallet generator -->
+  <script src="js/secure/slip39.js"></script>
+  <script src="js/secure/bip38.js"></script>
+  <script src="js/wallet/generator.js"></script>
+
+  <!-- 6. User interface and output -->
   <script src="js/ui/i18n.js"></script>
   <script src="js/ui/dom.js"></script>
+  <script src="js/output/qr.js"></script>
   <script src="js/ui/entropy-ui.js"></script>
+  <script src="js/ui/generator-ui.js"></script>
+  <script src="js/ui/result-ui.js"></script>
+  <script src="js/output/pdf.js"></script>
+  <script src="js/output/pdf-manual.js"></script>
+  <script src="js/ui/pdf-ui.js"></script>
   <script src="js/ui/app.js"></script>
 </body>
 </html>
