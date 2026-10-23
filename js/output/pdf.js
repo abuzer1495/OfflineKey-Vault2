@@ -17,7 +17,7 @@
  *     useBackground, bgFront, bgBack        JPEG data URLs (already re-encoded)
  *     secretQr      print QR codes of secrets (mnemonic / private keys)
  *     coinSecrets   HD wallets: also print each coin's private key
- *     manual        append an A4 instruction page (language = UI language)
+ *     manual        append instruction page(s): A5 when A5 is chosen, else A4 (language = UI language)
  *
  * TEXT
  *   DejaVu Sans Mono (vendor/dejavu-fonts.js) is embedded, so Turkish and
@@ -251,7 +251,9 @@
     cardBackground(doc, L, side, x, y, w, h);
     var innerX = x + PAD, innerW = w - 2 * PAD;
     // Title
+    // Shrink the title until it fits in two lines, so the "-xxxxx" tag at its end is never cut.
     var titleSize = Math.min(8, Math.max(4.5, h / 8));
+    while (titleSize > 3.5 && wrapText(spec.title, colsFor(innerW, titleSize)).length > 2) titleSize -= 0.25;
     font(doc, true, titleSize);
     var titleRows = wrapText(spec.title, colsFor(innerW, titleSize)).slice(0, 2);
     textBackground(doc, L, innerX, y + PAD, innerW, titleRows.length * lh(titleSize));
@@ -320,16 +322,25 @@
 
   // ---- What goes on each card ----------------------------------------------------
 
-  /** Build the list of card pairs [{front, back}] for a wallet set. */
+  /**
+   * Build the list of card pairs [{front, back}] for a wallet set.
+   * Each pair carries `tag`: the last 5 characters of its address (seed and
+   * share cards use the first coin's address). It is appended as "-xxxxx" to
+   * the title of BOTH sides, so cut cards can be matched front-to-back. It is
+   * kept out of the address text itself so nobody copies it as part of the
+   * address.
+   */
   function cardsFor(set, L) {
     var date = set.createdAt.slice(0, 10);
     var cards = [];
+    var walletTag = set.results.length ? set.results[0].address.slice(-5) : '';
     var secretFoot = t('pdfSecret') + ' · ' + date;
     var publicFoot = t('pdfPublic') + ' · ' + date;
 
     if (set.mnemonic) {
       var words = WG.bip39.words(set.mnemonic);
       cards.push({
+        tag: walletTag,
         front: { title: t('pdfSeedTitle', { n: words.length, lang: set.language }), words: words, qr: L.secretQr ? set.mnemonic : null,
           footer: secretFoot + (set.hasPassphrase ? ' · ' + t('pdfPassYes') : '') },
         back: { title: t('pdfSummaryTitle'), footer: publicFoot,
@@ -339,6 +350,7 @@
     if (set.shares) {
       set.shares.forEach(function (sh, i) {
         cards.push({
+          tag: walletTag,
           front: { title: t('pdfShareTitle', { i: i + 1, n: set.shares.length, m: set.slip39.threshold }), words: sh.split(' '), qr: L.secretQr ? sh : null,
             footer: secretFoot + (set.hasPassphrase ? ' · ' + t('pdfPassYes') : '') },
           back: { title: t('pdfShareBackTitle'), footer: publicFoot,
@@ -352,6 +364,7 @@
       var watch = r.watch.map(function (wi) { return { label: t(wi.labelKey), value: wi.value }; });
       if (r.coin === 'xmr') {
         cards.push({
+          tag: r.address.slice(-5),
           front: { title: 'Monero · ' + t('pdfMoneroSeed'), words: r.mnemonic.split(' '), qr: L.secretQr ? r.mnemonic : null, footer: secretFoot },
           back: { title: 'Monero · ' + t('pdfPublicSide'), blocks: [address].concat(watch, [{ label: t('pdfRestoreDate'), value: date }]), qr: r.address, footer: publicFoot },
         });
@@ -361,18 +374,25 @@
       if (printSecrets) {
         var sec = r.secrets[0];
         cards.push({
+          tag: r.address.slice(-5),
           front: { title: head, blocks: [{ label: t(sec.labelKey), value: sec.value }].concat(r.bip38 ? [{ label: '', value: t('pdfBip38Note') }] : []),
             qr: L.secretQr && sec.qr ? sec.value : null, footer: secretFoot },
           back: { title: r.name + ' · ' + t('pdfPublicSide'), blocks: [address].concat(watch), qr: r.address, footer: publicFoot },
         });
       } else {
         cards.push({
+          tag: r.address.slice(-5),
           front: { title: head, blocks: [address], qr: r.address, footer: publicFoot },
           back: { title: r.name + ' · ' + t('pdfWatchSide'), footer: publicFoot,
             blocks: watch.length ? watch : [{ label: '', value: t(set.mode === 'slip39' ? 'backupIsShares' : 'backupIsMnemonic') }],
             qr: watch.length ? r.watch[0].value : null },
         });
       }
+    });
+    cards.forEach(function (c) {
+      if (!c.tag) return;
+      c.front.title += ' -' + c.tag;
+      c.back.title += ' -' + c.tag;
     });
     return cards;
   }

@@ -73,9 +73,20 @@
     checkHelp();                           // step 2 (default options)
     checkWidth('step2');
 
+    // Selecting a coin re-renders the settings panel; the page must not jump
+    // (Android bug in v0.5.0: it scrolled up to the panel top) and the tapped
+    // box must keep the focus.
+    out.scrollJumps = [];
     for (const id of ['btc', 'ltc', 'doge', 'eth', 'trx', 'xrp', 'sol', 'xlm', 'ada', 'xmr']) {
-      const box = $('coin-' + id);
-      if (!box.checked) box.click();     // re-renders the panel; fetch by id each time
+      const box = $('coin-' + id);    // re-rendered each time; fetch by id
+      if (box.checked) continue;
+      box.scrollIntoView({ block: 'center' });
+      const before = window.scrollY;
+      box.focus({ preventScroll: true });   // a real tap focuses the box; a scripted click() does not
+      box.click();
+      await frame();
+      if (Math.abs(window.scrollY - before) > 3) out.scrollJumps.push(id + ': ' + before + '->' + window.scrollY);
+      if (document.activeElement !== $('coin-' + id)) out.scrollJumps.push(id + ': focus lost');
     }
     await frame();
     if ($('generate').disabled) throw new Error('generate disabled: ' + document.querySelector('.problems').textContent);

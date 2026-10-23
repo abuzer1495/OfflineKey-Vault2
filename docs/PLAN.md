@@ -1,6 +1,6 @@
 # Plan — OfflineKey Vault: portable, çevrimdışı, çoklu coin kâğıt cüzdan üreticisi
 
-**Durum:** v0.5.0 (2026-10-23, pre-release). Repo: [`snipeTR/OfflineKey-Vault`](https://github.com/snipeTR/OfflineKey-Vault) (eski adı `kripto_wallet_offline_yet`), dal `main`.
+**Durum:** v0.5.1 (2026-10-24, pre-release). Repo: [`snipeTR/OfflineKey-Vault`](https://github.com/snipeTR/OfflineKey-Vault) (eski adı `kripto_wallet_offline_yet`), dal `main`.
 Odak: basılıp kesilmeye uygun kâğıt cüzdan kartları.
 Önceki proje `monero-PDF-wallet-generator` (PHP, yalnızca Monero) GitHub'dan ve yerelden kaldırıldı; geçmişi yalnızca yerel bir git bundle yedeğinde duruyor.
 
@@ -146,7 +146,7 @@ Notlar (arayüzde ve kılavuz sayfasında gösterilir): XRP ve Stellar minimum r
 - **Sihirbaz:** 1 Entropi (Atla / Uygula ve devam et) → 2 Ayarlar (Cüzdan üret) → 3 Cüzdan → 4 Yazdır; her adımda Geri/İleri.
 - **Gizli bilgiler** yalnızca "Göster"e basılınca DOM'a yazılır, "Gizle"de silinir; gizli QR'lar da yalnızca açıkken çizilir.
 - **Yazdır:** sayfanın 2/5 ölçekli SVG önizlemesi; üst/sol boşluk, kart genişliği/yüksekliği ve kartlar arası boşluk çizgi sürükleyerek veya alanlardan ayarlanır. Önizleme ve PDF aynı `WG.pdf.placements()` fonksiyonunu kullanır.
-- **PDF:** ön yüz gizli / arka yüz açık kartlar; eski projenin tüm düzen ayarları (marj, kart boyutu, boşluk, iç/dış kılavuz ve rengi, yazı rengi, yazı arka planı ve opaklığı, gölge, A4/A5/sığdır, dikey/yatay, çift taraflı baskı için aynalı sayfalar, ön/arka arka plan resmi), gömülü Unicode font, CJK kelimeler için canvas, TR/EN kılavuz sayfası.
+- **PDF:** ön yüz gizli / arka yüz açık kartlar; eski projenin tüm düzen ayarları (marj, kart boyutu, boşluk, iç/dış kılavuz ve rengi, yazı rengi, yazı arka planı ve opaklığı, gölge, A4/A5/sığdır, dikey/yatay, çift taraflı baskı için aynalı sayfalar, ön/arka arka plan resmi), gömülü Unicode font, CJK kelimeler için canvas, TR/EN kılavuz sayfası (A5 seçilince A5 dikey, değilse A4; gerektiği kadar sayfaya, başlık sayfa dibinde yalnız kalmayacak ve paragrafın tek satırı ayrılmayacak şekilde bölünür). Her kartın iki yüzünün başlığı, ön ve arka yüzü kesildikten sonra eşleştirmek için "-xxxxx" (adresin son 5 karakteri; kelime/pay kartlarında ilk coinin adresi) ile biter; adresin kendisine eklenmez ki kopyalanırken karışmasın.
 - **Yardım:** her seçenek ve butonun yanında küçük "?" butonu; kripto bilmeyen birine örnek ve benzetmeyle kısa açıklama (82 konu, TR/EN).
 - **Ultra güvenlik rehberi:** üstteki yeşil buton yeni sekmede `guide/tr.html` / `guide/en.html`'i açar. Statik sayfa (script yok, aynı CSP). İçerik: neden günlük bilgisayar kullanılmamalı, canlı Linux'un RAM'de çalışması, Tails önerisi (7.15.1, ~1,8 GB; yedek Linux Mint 22.3 Xfce), indirme ve sitenin/dosyanın doğrulanması (Tails doğrulama aracı, SHA-256), USB hazırlama, ağın kesilmesi ve nedeni (hava boşluğu), Tails'i Offline Mode ile başlatma, uygulamayı Ev klasöründen Tor Browser'da açma (güvenlik seviyesi Standard), USB kablolu yazıcıyla çevrimdışı baskı, elle yazma, saklama, sık hatalar. Teknik terimler parantez içinde açıklanır. Bilgiler Ekim 2026'da tails.net ve linuxmint.com'dan doğrulandı. 14. bölüm telefon/tablet kullanımının risklerini ve yapılacakları anlatır.
 - **Mobil:** 600 px altı ekranlarda daha dar kenar boşlukları, 2×2 adım göstergesi, alt alta gezinme butonları, 2 sütun kelime ızgarası; dokunmatik ekranlarda (`pointer: coarse`) büyütülmüş "?" butonları, en az 40 px yükseklikte kontroller ve önizlemede geniş tutma alanı. Izgaralar ekrandan geniş olamaz (`minmax(min(…, 100%), 1fr)`).
@@ -165,7 +165,7 @@ Notlar (arayüzde ve kılavuz sayfasında gösterilir): XRP ve Stellar minimum r
 
 ## 10. Test
 
-- `tests/test.html`: 215 test — kütüphane KAT'ları, 24 BIP39 + 17 BIP32 vektörü, BIP84/86, SLIP-0010, SEP-0005, CIP-3, 45 SLIP-39 vektörü, BIP38, Monero, Trezor ve Ian Coleman vektörleri, entropi, üretici, CSP kanarya testi. Vektörler commit'e sabitlenmiş resmi kaynaklardan gelir.
+- `tests/test.html`: 218 test — kütüphane KAT'ları, 24 BIP39 + 17 BIP32 vektörü, BIP84/86, SLIP-0010, SEP-0005, CIP-3, 45 SLIP-39 vektörü, BIP38, Monero, Trezor ve Ian Coleman vektörleri, entropi, üretici, CSP kanarya testi. Vektörler commit'e sabitlenmiş resmi kaynaklardan gelir.
 - `tools/browser-test/run.mjs`: Chrome, Edge ve Firefox'ta `file://` üzerinden `index.html`, `tests/test.html`, iki rehber sayfası ve her çalıştırmada yeniden üretilen tek dosya sürümü (CSP/konsol hatası olmamalı). Firefox'ta tam arayüz akışı (entropi → 10 coin → üret → göster/gizle → önizlemede sürükleme → PDF dosyasının gerçekten inmesi → baştan başla) ve bütün "?" butonları: masaüstünde `index.html` ile, 360×740 telefon boyutunda tek dosya sürümüyle; telefon turunda her adımda yatay taşma olmamalı. Test indirmeleri geçici profil klasörüne gider.
 - Her release'ten önce zip'ten çıkan kopya da aynı testlerden geçirilir; yayımlanan zip'in hash'i indirilerek doğrulanır.
 - Litecoin ltc1 için bağımsız vektör bulunamadı; Trezor LTC anahtarı + BIP84 kodlaması + SLIP-0173 "ltc" önekinden birleştirilmiş vektör kullanılıyor.
@@ -184,6 +184,7 @@ Notlar (arayüzde ve kılavuz sayfasında gösterilir): XRP ve Stellar minimum r
 | v0.4.0 | "Ultra güvenlik istiyorsanız bunu okuyun" butonu ve TR/EN rehber sayfaları (Tails ile çevrimdışı üretim ve baskı). |
 | v0.4.1 | Proje adı **OfflineKey Vault** oldu (repo `snipeTR/OfflineKey-Vault`); başlıklar, belgeler, PDF bilgisi ve release zip adı (`OfflineKey-Vault-X.Y.Z.zip`) güncellendi. |
 | v0.5.0 | Mobil uyum: telefon/dokunmatik düzeni, telefonlar için tek dosya sürümü (`OfflineKey-Vault-X.Y.Z.html`, gömülü rehber, özet tabanlı CSP), rehbere telefon/tablet bölümü, PDF/QR/font kütüphaneleri için kritik başlangıç testi; testler telefon boyutunda da çalışıyor ve indirmeler artık kullanıcının İndirilenler klasörüne düşmüyor. |
+| v0.5.1 | Android'de coin seçince sayfanın yukarı zıplaması düzeltildi (panel yeniden kurulurken kaydırma konumu ve odak korunuyor; akış testi kontrol ediyor). PDF kartlarının iki yüzüne eşleşme kodu "-xxxxx". A5 seçilince kılavuz da A5 ve gerektiği kadar sayfaya bölünüyor. 3 yeni PDF testi. |
 
 ## 12. Açık işler
 

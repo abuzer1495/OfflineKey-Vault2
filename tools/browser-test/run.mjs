@@ -197,7 +197,7 @@ async function testFirefox(b, url) {
       if (pdfs.length < downloadsBefore + 1) problems.push(tag + 'no PDF file was downloaded');
       downloadsBefore = pdfs.length;
       if (smoke.error || smoke.coinCards !== 10 || !smoke.checksOk || !smoke.revealOk || !smoke.dragOk || !smoke.typeOk || !smoke.pdfMsg ||
-        !smoke.restartOk || smoke.helpMissing.length || smoke.helpButtons < 60 || !smoke.guideOk || smoke.overflow.length) {
+        !smoke.restartOk || smoke.helpMissing.length || smoke.helpButtons < 60 || !smoke.guideOk || smoke.overflow.length || smoke.scrollJumps.length) {
         problems.push(tag + 'ui flow: ' + JSON.stringify(smoke));
       }
     };

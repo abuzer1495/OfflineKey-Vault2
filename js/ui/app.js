@@ -46,10 +46,13 @@
   var STEPS = ['stepEntropy', 'stepSettings', 'stepWallet', 'stepPrint'];
 
   /** Go to a step and scroll to the top. */
+  var toTop = false;    // set while go() renders a new step
+
   function go(step) {
     state.step = step;
+    toTop = true;
     render();
-    window.scrollTo(0, 0);
+    toTop = false;
   }
 
   /** Button helper (the id is used by the automated UI test). */
@@ -192,6 +195,9 @@
 
   /** Rebuild the page from state. */
   function render() {
+    // Same-step re-renders (threshold, language, online/offline) keep the
+    // scroll position; a step change (go) starts at the top.
+    var y = toTop ? 0 : window.scrollY;
     if (panel && panel.destroy) panel.destroy();
     if (unsubscribe) unsubscribe();
     panel = null;
@@ -215,6 +221,7 @@
           el('ul', null, Object.keys(v).map(function (name) { return el('li', null, name + ' ' + v[name]); }))),
         el('p', null, t('footer'))),
     ]);
+    window.scrollTo(0, y);
   }
 
   /** Start-up sequence. */

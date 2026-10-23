@@ -62,7 +62,7 @@ computer — see section 14 of the guide.
 
 ## Verify / audit
 
-- `tests/test.html` — 215 tests: official vectors from BIP32/39/84/86/38,
+- `tests/test.html` — 218 tests: official vectors from BIP32/39/84/86/38,
   SLIP-0010/0039, SEP-0005, CIP-3, the Monero project, Trezor firmware and
   Ian Coleman's BIP39 tool, all pinned to upstream commits.
 - `vendor/VENDOR.md` + `vendor/SHA256SUMS` — exact third-party versions

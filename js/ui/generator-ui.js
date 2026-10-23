@@ -119,8 +119,24 @@
     var section = el('section', { class: 'card generator' });
     var busy = false;
 
-    /** Rebuild the panel content (cheap; called after structural changes). */
+    /**
+     * Rebuild the panel content (cheap; called after structural changes).
+     * Rebuilding empties the panel for a moment, which made mobile browsers
+     * jump up to the panel top and lose the tapped control's focus, so the
+     * scroll position and the focused element are restored afterwards.
+     */
     function render() {
+      var y = window.scrollY;
+      var active = document.activeElement;
+      var focusId = active && section.contains(active) ? active.id : null;
+      build();
+      window.scrollTo(0, y);
+      var again = focusId && document.getElementById(focusId);
+      if (again) again.focus({ preventScroll: true });
+    }
+
+    /** Create every control of the panel from the settings. */
+    function build() {
       WG.dom.clear(section);
       section.appendChild(el('h2', null, t('genTitle'), help('settings')));
 

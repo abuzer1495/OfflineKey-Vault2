@@ -22,8 +22,8 @@ const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const filter = process.argv[2] || '';
 const testHtml = readFileSync(join(repo, 'tests', 'test.html'), 'utf8');
 
-// Scripts in test.html order, minus those that need a real DOM.
-const SKIP = /test-page\.js|suites\/csp\.js|suites\/entropy\.js|js\/ui\//;
+// Scripts in test.html order, minus those that need a real DOM (UI, PDF output and their suites).
+const SKIP = /test-page\.js|suites\/csp\.js|suites\/entropy\.js|suites\/pdf\.js|js\/ui\/|js\/output\//;
 const scripts = [...testHtml.matchAll(/<script src="([^"]+)"><\/script>/g)]
   .map((m) => resolve(join(repo, 'tests'), m[1]))
   .filter((p) => !SKIP.test(p.replace(/\\/g, '/')));

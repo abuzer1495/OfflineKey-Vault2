@@ -2,7 +2,7 @@
  * js/output/pdf-manual.js   ->   WG.pdfManual
  *
  * PURPOSE
- *   Appends A4 instruction page(s) to the wallet PDF in the current UI
+ *   Appends instruction page(s) (A5 for A5 layouts, otherwise A4) to the wallet PDF in the current UI
  *   language: what each card is, how to store it, how to restore it (which
  *   wallet apps, which derivation path) and safety rules. No secrets are
  *   printed here.
@@ -19,18 +19,30 @@
    * @param {object} h      helpers from pdf.js: font(doc, bold, size), lh(size), wrapText(text, cols), colsFor(w, size)
    */
   function addTo(doc, set, L, h) {
-    var W = 210, H = 297, M = 15, size = 8.5;
+    // The manual uses the cards' paper: A5 portrait when A5 is chosen,
+    // otherwise A4 portrait ("fit" pages are card-sized, too small for text).
+    var a5 = L.pageSize === 'a5';
+    var W = a5 ? 148 : 210, H = a5 ? 210 : 297, M = a5 ? 10 : 15, size = a5 ? 7.5 : 8.5;
     var cols = h.colsFor(W - 2 * M, size);
     var y = 0;
 
     function page() { doc.addPage([W, H], 'p'); y = M; }
 
-    /** Print a paragraph, starting a new page when the current one is full. */
+    /**
+     * Print a paragraph; text flows onto as many pages as needed. Breaks are
+     * placed sensibly: a heading never stays alone at the bottom of a page
+     * (it needs room for 3 more lines), and a paragraph never leaves a single
+     * line behind (it moves to the next page if fewer than 2 lines fit).
+     */
     function para(text, bold, big) {
       var s = big ? 12 : size;
+      var lines = h.wrapText(text, big ? h.colsFor(W - 2 * M, s) : cols);
+      var room = Math.floor((H - M - y) / h.lh(s));
+      var needed = bold ? lines.length + 3 : Math.min(lines.length, 2);
+      if (room < needed) page();
       h.font(doc, bold, s);
       doc.setTextColor(0, 0, 0);
-      h.wrapText(text, big ? h.colsFor(W - 2 * M, s) : cols).forEach(function (line) {
+      lines.forEach(function (line) {
         if (y + h.lh(s) > H - M) page();
         doc.text(line, M, y, { baseline: 'top' });
         y += h.lh(s);
