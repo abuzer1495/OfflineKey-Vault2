@@ -60,6 +60,10 @@ jobs:
 
       - name: Browser tests on the unpacked zip
         run: |
+          # The runner image ships Edge's sandbox helper without the setuid bit,
+          # so Edge aborts; fix it instead of running Edge without a sandbox.
+          sudo chown root:root /opt/microsoft/msedge/msedge-sandbox
+          sudo chmod 4755 /opt/microsoft/msedge/msedge-sandbox
           mkdir -p /tmp/unpacked
           unzip -q "dist/OfflineKey-Vault-${GITHUB_REF_NAME#v}.zip" -d /tmp/unpacked
           cd "/tmp/unpacked/OfflineKey-Vault-${GITHUB_REF_NAME#v}"
