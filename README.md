@@ -1,7 +1,7 @@
 # kripto_wallet_offline_yet — Offline Paper Wallet Generator (in development)
 
 > **Status:** milestone M0 (skeleton). It does **not** generate wallets yet.
-> Successor of [monero-PDF-wallet-generator](https://github.com/snipeTR/monero-PDF-wallet-generator/tree/v1-legacy) (legacy PHP/TCPDF Monero version).
+> Successor of the retired `monero-PDF-wallet-generator` project (PHP/TCPDF, Monero only).
 > Roadmap: [docs/PLAN.md](docs/PLAN.md).
 
 A portable, fully offline paper-wallet generator focused on printable,
@@ -57,6 +57,6 @@ Tek bir HTML dosyası açılarak tüm güncel tarayıcılarda tamamen çevrimdı
 çalışan, taşınabilir kâğıt cüzdan üreticisi. **Şu an M0 iskelet aşamasında,
 henüz cüzdan üretmez.** Kullanım: zip'i indir, aç, internet bağlantısını kes,
 `index.html` dosyasına çift tıkla. Tüm testler için `tests/test.html`.
-Yol haritası: [docs/PLAN.md](docs/PLAN.md). Önceki proje: [monero-PDF-wallet-generator](https://github.com/snipeTR/monero-PDF-wallet-generator/tree/v1-legacy) (eski PHP sürümü).
+Yol haritası: [docs/PLAN.md](docs/PLAN.md). Önceki proje: emekliye ayrılan `monero-PDF-wallet-generator` (PHP, yalnızca Monero).
 
 License: MIT — see [LICENSE](LICENSE).

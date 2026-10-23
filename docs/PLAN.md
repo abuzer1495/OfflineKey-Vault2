@@ -1,6 +1,6 @@
 # Plan — kripto_wallet_offline_yet: portable, çevrimdışı, çoklu coin kâğıt cüzdan üreticisi
 
-Durum: taslak (2026-10-22). Repo: `snipeTR/kripto_wallet_offline_yet` (2026-10-23'te ayrı repoya taşındı, temiz geçmiş). Odak: basılıp kesilmeye uygun kâğıt cüzdan kartları. Önceki proje: [monero-PDF-wallet-generator](https://github.com/snipeTR/monero-PDF-wallet-generator/tree/v1-legacy) — eski PHP sürümü orada `v1-legacy` etiketinde.
+Durum: taslak (2026-10-22). Repo: `snipeTR/kripto_wallet_offline_yet` (2026-10-23'te ayrı repoya taşındı, temiz geçmiş). Odak: basılıp kesilmeye uygun kâğıt cüzdan kartları. Önceki proje `monero-PDF-wallet-generator` (PHP, yalnızca Monero) GitHub'dan kaldırıldı; tam geçmişi yerel bir git bundle yedeğinde duruyor.
 
 ## 1. Değişmez kurallar
 
@@ -145,7 +145,7 @@ Kullanıcı arayüzde ayrı ayrı açıp kapatabilir:
 
 | # | İçerik |
 |---|---|
-| M0 | İskelet, eski repoda `v1-legacy` etiketi, vendor bundle, selftest + test sayfası altyapısı |
+| M0 | İskelet, vendor bundle, selftest + test sayfası altyapısı |
 | M1 | Entropi modülü + arayüz |
 | M2 | BIP39 + Bitcoin, Litecoin, Dogecoin, Ethereum, Tron, XRP |
 | M3 | SLIP-0010: Solana, Stellar |
@@ -158,7 +158,7 @@ Kullanıcı arayüzde ayrı ayrı açıp kapatabilir:
 ## 11. İlerleme
 
 ### M0 — tamamlandı (2026-10-22)
-- Eski repoda `v1-legacy` etiketi oluşturuldu ve push edildi. Kod 2026-10-23'te temiz geçmişle bu yeni repoya taşındı; eski repodaki `v2` dalı silindi.
+- Kod 2026-10-23'te temiz geçmişle bu yeni repoya taşındı; eski repo (`monero-PDF-wallet-generator`) GitHub'dan silindi, yerelde git bundle yedeği var.
 - `vendor/wg-crypto.js`: noble/scure 2.4.0, esbuild 0.28.2 ile IIFE; tek salt-okunur global `WGVendor`. Build iki kez çalıştırıldığında aynı SHA-256 → tekrar üretilebilir. `generateMnemonic` bilerek dışa açılmadı (tüm sırlar entropi havuzundan gelmeli).
 - `vendor/jspdf.umd.js` (4.2.1) ve `vendor/qrcode.js` (2.0.4) npm paketinden birebir kopya. jsPDF'te yalnızca URL'den dosya yükleme yolunda XHR var; CSP `connect-src 'none'` engeller.
 - Çekirdek: `WG.define` (dondurulmuş, değiştirilemez modüller), `WG.bytes`, `WG.selftest` (`requireHealthy()` kapısı), 20 kritik KAT (FIPS/RFC/BIP; CSP meta, CSPRNG, vendor kilidi dâhil).
