@@ -32,7 +32,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = resolve(here, '..', '..');
-const pages = ['index.html', 'tests/test.html'];
+const pages = ['index.html', 'tests/test.html', 'guide/tr.html', 'guide/en.html'];
+// Static pages (no JavaScript, no self-test): they pass when they load with a title and no console/CSP errors.
+const isStatic = (page) => page.startsWith('guide/');
 const filter = (process.argv[2] || '').toLowerCase();
 
 /** Known install locations per OS; the first existing path per browser wins. */
@@ -135,7 +137,7 @@ async function testFirefox(b, url) {
     await send('browsingContext.navigate', { context, url, wait: 'complete' });
     const evalStr = async (expr) => (await send('script.evaluate', { expression: expr, target: { context }, awaitPromise: false })).result.value;
     let status = 'none';
-    for (let i = 0; i < 120 && status === 'none'; i++) {
+    for (let i = 0; i < (url.includes('/guide/') ? 0 : 120) && status === 'none'; i++) {
       status = (await evalStr("document.documentElement.getAttribute('data-selftest') || 'none'")) || 'none';
       if (status === 'none') await new Promise((r) => setTimeout(r, 500));
     }
@@ -172,7 +174,7 @@ async function testFirefox(b, url) {
         expression: readFileSync(join(here, 'smoke.js'), 'utf8'), target: { context }, awaitPromise: true,
       })).result.value);
       await shot('step4');
-      if (smoke.error || smoke.coinCards !== 10 || !smoke.checksOk || !smoke.revealOk || !smoke.dragOk || !smoke.typeOk || !smoke.pdfMsg || !smoke.restartOk || smoke.helpMissing.length || smoke.helpButtons < 60) problems.push('ui flow: ' + JSON.stringify(smoke));
+      if (smoke.error || smoke.coinCards !== 10 || !smoke.checksOk || !smoke.revealOk || !smoke.dragOk || !smoke.typeOk || !smoke.pdfMsg || !smoke.restartOk || smoke.helpMissing.length || smoke.helpButtons < 60 || !smoke.guideOk) problems.push('ui flow: ' + JSON.stringify(smoke));
       // Optional sample PDFs for visual review.
       if (process.env.WG_SAMPLE_DIR) {
         const samples = JSON.parse((await send('script.evaluate', {
@@ -205,7 +207,8 @@ for (const b of browsers) {
     } catch (e) {
       r = { status: 'error', title: e.message, problems: [] };
     }
-    const ok = r.status === 'pass' && r.problems.length === 0;
+    if (isStatic(page) && r.status === 'none' && r.title) r.status = 'static';
+    const ok = (r.status === 'pass' || r.status === 'static') && r.problems.length === 0;
     if (!ok) failures++;
     console.log((ok ? 'OK   ' : 'FAIL ') + b.name.padEnd(8) + page.padEnd(18) + 'selftest=' + r.status + (r.title ? '  title="' + r.title + '"' : ''));
     for (const line of r.problems) console.log('       ' + line.trim());

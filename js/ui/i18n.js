@@ -32,6 +32,7 @@
       error: 'Hata',
       helpLabel: 'Yardım: bu ne işe yarar?',
       helpClose: 'Kapat',
+      guideButton: 'Ultra güvenlik istiyorsanız bunu okuyun',
       words: 'kelime',
       footer: 'Açık kaynak, MIT lisansı. Hiçbir veri ağa gönderilmez.',
 
@@ -274,6 +275,7 @@
       error: 'Error',
       helpLabel: 'Help: what is this?',
       helpClose: 'Close',
+      guideButton: 'Want ultra security? Read this first',
       words: 'words',
       footer: 'Open source, MIT license. No data is ever sent to the network.',
 

@@ -13,6 +13,7 @@
 
   var tr = {
     // ---- General
+    guide: "Yeni bir sekmede adım adım bir rehber açar: bilgisayarınızı internetten tamamen ayırıp USB'den çalışan temiz bir sistemle (Tails) cüzdanı üretmeyi ve güvenle yazdırmayı anlatır.\nBenzetme: kasayı kalabalık bir çarşıda değil, kapısı kilitli boş bir odada açmak. Büyük tutarlar saklayacaksanız mutlaka okuyun.",
     navBack: "Bir önceki adıma döner. Girdiğiniz bilgiler ve toplanan rastgelelik kaybolmaz.",
     navForward: "Daha önce ürettiğiniz cüzdanı tekrar göstermek için sonraki adıma geçer.",
     vendor: "Programın kullandığı hazır yazılım parçalarının (şifreleme, PDF, QR kodu) listesi ve sürümleri. Bunlar herkesin inceleyebildiği, denetlenmiş açık kaynak kütüphanelerdir; tıpkı bir binada kullanılan sertifikalı malzemelerin listesi gibi.",
@@ -106,6 +107,7 @@
 
   var en = {
     // ---- General
+    guide: "Opens a step-by-step guide in a new tab: how to cut your computer off from the internet completely and create and print the wallet with a clean system running from USB (Tails).\nAnalogy: opening a safe in a locked, empty room instead of a crowded market. Read it if you will store large amounts.",
     navBack: "Goes back to the previous step. What you entered and the collected randomness are kept.",
     navForward: "Moves forward to show the wallet you already generated.",
     vendor: "The list and versions of ready-made software parts the program uses (encryption, PDF, QR codes). They are audited open-source libraries anyone can inspect, like the list of certified materials used in a building.",

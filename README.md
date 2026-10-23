@@ -15,6 +15,10 @@ always gets its own 25-word seed.
 your own dice rolls, coin flips, mouse/touch movement and key timings; an
 optional verifiable "dice only" mode follows the Coldcard method.
 
+An **"ultra security" guide** (button at the top of the app, `guide/tr.html`,
+`guide/en.html`) explains step by step how to create and print the wallet on
+a verified, offline live Linux (Tails), with a USB-cable printer or by hand.
+
 Every option and button has a small **?** button that explains it in plain
 language, with an example and an everyday analogy — no crypto knowledge needed.
 
@@ -24,7 +28,8 @@ language, with an example and an everyday analogy — no crypto knowledge needed
 ## Use
 
 1. Download the release zip, verify it (`sha256sum -c SHA256SUMS`), extract it.
-2. Disconnect the computer from the internet.
+2. Disconnect the computer from the internet (for maximum safety follow the
+   ultra security guide: boot Tails from USB in Offline Mode).
 3. Double-click `index.html`. The page runs its cryptographic self-tests and
    refuses to generate keys if any of them fails.
 4. Follow the four steps with **Next / Back**: collect entropy and press

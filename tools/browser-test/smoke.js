@@ -40,6 +40,8 @@
   const tr = Object.keys(WG.helpTexts.tr).sort().join(), en = Object.keys(WG.helpTexts.en).sort().join();
   if (tr !== en) out.helpMissing.push('TR/EN help keys differ');
   try {
+    // The ultra-security guide link must point to the guide in the UI language.
+    out.guideOk = /^guide\/(tr|en)\.html$/.test($('guide-link').getAttribute('href')) && $('guide-link').target === '_blank';
     checkHelp();                           // step 1
     $('dice-input').value = '3615244326155142363125642351'.repeat(4).slice(0, 94);
     $('dice-add').click();

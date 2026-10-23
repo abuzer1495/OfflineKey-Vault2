@@ -161,7 +161,11 @@
     WG.dom.append(WG.dom.clear(document.getElementById('app')), [
       el('header', null,
         el('div', { class: 'header-row' }, el('h1', null, t('appTitle')), navItem(langBtn, 'lang')),
-        el('p', { class: 'muted' }, t('appSubtitle') + ' v' + WG.version)),
+        el('p', { class: 'muted' }, t('appSubtitle') + ' v' + WG.version),
+        // Static guide page in a new tab, so the wallet state here is kept.
+        el('p', { class: 'guide-row' },
+          el('a', { class: 'guide-btn', id: 'guide-link', href: 'guide/' + WG.i18n.lang() + '.html', target: '_blank', rel: 'noopener' }, '🛡 ' + t('guideButton')),
+          WG.help.button('guide'))),
       el('div', { class: 'banner ' + (state.online ? 'banner-warn' : 'banner-ok'), role: 'status' }, state.online ? t('netOnline') : t('netOffline'), WG.help.button('offline')),
       viewSelftest(),
       healthy ? viewStepper() : null,

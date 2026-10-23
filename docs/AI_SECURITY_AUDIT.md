@@ -12,7 +12,7 @@ Report every way an attacker could learn, predict, alter or exfiltrate generated
 5. `js/wallet/generator.js` is the only place that creates keys; it supports BIP39, SLIP-39 and single-key modes, keeps Monero on its own seed, and returns a set only after re-decoding every backup and printed key and re-deriving every address.
 6. Coin derivations live in `js/derive/` and `js/coins/`; optional security features (SLIP-39, BIP38) live in `js/secure/`.
 7. `js/core/selftest*.js` and `js/coins/selftest-coins.js` run known-answer tests at start-up, and `WG.selftest.requireHealthy()` blocks generation if any fails.
-8. UI code is in `js/ui/`, PDF output in `js/output/`; all text is inserted with `textContent` via `js/ui/dom.js`.
+8. UI code is in `js/ui/`, PDF output in `js/output/`; all text is inserted with `textContent` via `js/ui/dom.js`; the security guide pages `guide/*.html` are static HTML with no scripts.
 9. The Content-Security-Policy `<meta>` in `index.html` sets `default-src 'none'`, `script-src 'self'`, `connect-src 'none'` and `form-action 'none'`.
 10. `tests/test.html` runs every test against official vectors pinned to upstream commits in `tests/vectors/`, and `tools/browser-test/run.mjs` runs it headless in Chrome, Edge and Firefox.
 

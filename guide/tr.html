@@ -1,0 +1,247 @@
+<!doctype html>
+<!--
+  guide/tr.html — "Ultra güvenlik" rehberi (Türkçe). Opened from the button
+  at the top of index.html (new tab, so the app keeps its state).
+  Static page: no JavaScript, same Content-Security-Policy as the app.
+  Facts checked against tails.net and linuxmint.com in October 2026.
+-->
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Ultra güvenlik rehberi — kâğıt cüzdan</title>
+  <link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<div id="app" class="guide">
+
+<header>
+  <div class="header-row">
+    <h1>Ultra güvenlik rehberi</h1>
+    <a class="lang-link" href="en.html">English</a>
+  </div>
+  <p class="muted">Cüzdanınızı %100'e en yakın güvenlikle üretmek ve kâğıda geçirmek için adım adım yol haritası. Teknik bilgi gerekmez; teknik kelimelerin anlamı parantez içinde verilmiştir.</p>
+  <p><a href="../index.html">← Uygulamaya dön</a></p>
+</header>
+
+<section class="card">
+  <h2>Kısa yol (özet)</h2>
+  <ol class="checklist">
+    <li>Normal bilgisayarınızda <strong>Tails</strong> adlı canlı Linux'u (USB'den çalışan, kurulum gerektirmeyen işletim sistemi) resmi sitesinden indirin ve <strong>doğrulayın</strong>.</li>
+    <li>Bu uygulamanın zip dosyasını indirin ve <strong>SHA-256 değerini</strong> (dosyanın parmak izi) kontrol edin.</li>
+    <li>Birinci USB belleğe Tails'i yazın; ikinci USB belleğe bu uygulamanın klasörünü kopyalayın.</li>
+    <li>Ağ kablosunu çıkarın, Wi-Fi ve Bluetooth'u kapatın, yazıcıyı ağdan ayırıp <strong>USB kablosuyla</strong> bağlayın.</li>
+    <li>Bilgisayarı Tails USB'sinden başlatın; karşılama ekranında <strong>Offline Mode</strong>'u (çevrimdışı mod) açın.</li>
+    <li>Uygulama klasörünü <strong>Ev (Home)</strong> klasörüne kopyalayın, Tor Browser ile <code>index.html</code>'i açın.</li>
+    <li>Cüzdanı üretin, PDF'i yazdırın ya da kelimeleri elle yazın.</li>
+    <li>Tails'i kapatın: bellekteki her şey silinir. Kâğıtları güvenli yerlere koyun.</li>
+  </ol>
+</section>
+
+<nav class="card toc">
+  <h2>İçindekiler</h2>
+  <ol>
+    <li><a href="#neden">Neden şu anki bilgisayarınızı kullanmamalısınız?</a></li>
+    <li><a href="#canli">Canlı Linux nedir, bellekte nasıl çalışır?</a></li>
+    <li><a href="#dagitim">Hangi Linux? (Tails önerisi)</a></li>
+    <li><a href="#ihtiyac">Neye ihtiyacınız var?</a></li>
+    <li><a href="#indir">İndirme ve sitenin güvenli olduğunu anlama</a></li>
+    <li><a href="#usb">USB belleği hazırlama</a></li>
+    <li><a href="#ag">Ağ bağlantısını kesme — nasıl ve neden?</a></li>
+    <li><a href="#baslat">Tails'i başlatma</a></li>
+    <li><a href="#uygulama">Uygulamayı çalıştırma</a></li>
+    <li><a href="#yazici">Yazıcıyı çevrimdışı kullanma</a></li>
+    <li><a href="#elle">Yazıcısız yol: kâğıda elle yazmak</a></li>
+    <li><a href="#bitir">Bitirme ve saklama</a></li>
+    <li><a href="#hatalar">Sık yapılan hatalar</a></li>
+  </ol>
+</nav>
+
+<section class="card" id="neden">
+  <h2>1. Neden şu anki bilgisayarınızı kullanmamalısınız?</h2>
+  <p>Her gün kullandığınız bilgisayar yıllardır internete bağlı; e-posta ekleri açılmış, programlar kurulmuş, tarayıcı eklentileri eklenmiştir. İçinde fark etmediğiniz bir <strong>kötü amaçlı yazılım</strong> (virüs, casus program) olabilir. Bu tür programlar şunları yapabilir:</p>
+  <ul>
+    <li><strong>Tuş kaydedici</strong> (keylogger — bastığınız her tuşu kaydeden program): yazdığınız parolayı çalar.</li>
+    <li><strong>Ekran yakalama</strong>: ekranda görünen kurtarma kelimelerinizin resmini çeker.</li>
+    <li><strong>Pano korsanı</strong> (clipboard hijacker — kopyaladığınız metni değiştiren program): kopyaladığınız adresi saldırganın adresiyle değiştirir.</li>
+    <li><strong>Bulut eşitleme</strong> (OneDrive, Google Drive, iCloud): indirdiğiniz PDF'i siz fark etmeden internete yükleyebilir.</li>
+    <li><strong>Takas dosyası ve geçici dosyalar</strong> (swap — işletim sisteminin belleği diske taşıdığı alan): gizli bilgiler diskte iz bırakabilir; siz silseniz bile geri getirilebilir.</li>
+  </ul>
+  <div class="tip"><strong>Benzetme:</strong> Kasanızın şifresini kalabalık bir çarşının ortasında, kimin izlediğini bilmeden yazmak gibidir. Temiz bir canlı Linux ise kapısı kilitli, penceresiz, boş bir odadır.</div>
+</section>
+
+<section class="card" id="canli">
+  <h2>2. Canlı Linux nedir, bellekte nasıl çalışır?</h2>
+  <p><strong>Canlı Linux</strong> (Live Linux), bir USB bellekten başlayan ve bilgisayarın diskine <em>hiçbir şey kurmadan</em> çalışan bir işletim sistemidir (bilgisayarı yöneten temel yazılım, Windows gibi).</p>
+  <ul>
+    <li>Açıldığında kendini bilgisayarın <strong>RAM</strong>'ine (çalışma belleği — elektrik kesilince içi boşalan geçici hafıza) yükler.</li>
+    <li>Sabit diske (bilgisayarınızın kalıcı deposu: HDD/SSD) dokunmaz; Windows'unuz ve dosyalarınız olduğu gibi kalır.</li>
+    <li>Ürettiğiniz anahtarlar, PDF ve yazdığınız her şey yalnızca RAM'de durur.</li>
+    <li>Kapattığınızda RAM boşalır. Tails bir adım daha ileri gider: kapanırken belleğin üzerine rastgele veri yazarak eski içeriğin geri okunmasını zorlaştırır.</li>
+  </ul>
+  <div class="tip"><strong>Benzetme:</strong> Defter yerine tebeşirle tahtaya yazmak gibi. İşiniz bitince tahta silinir; iz kalmaz. Defterinize (diskinize) hiçbir şey yazılmaz.</div>
+</section>
+
+<section class="card" id="dagitim">
+  <h2>3. Hangi Linux? (Tails önerisi)</h2>
+  <p>Linux'un pek çok <strong>dağıtımı</strong> (distribution — farklı ekiplerin hazırladığı Linux sürümleri) vardır. Bu iş için önerimiz <strong>Tails</strong>'tir:</p>
+  <ul>
+    <li><strong>Unutkan</strong> (amnesic) olacak şekilde tasarlanmıştır: kapanınca hiçbir iz bırakmaz.</li>
+    <li>Karşılama ekranında tek tıkla açılan <strong>Offline Mode</strong> (çevrimdışı mod) vardır.</li>
+    <li>İndirilen dosyanın sahte olmadığını kontrol etmek için resmi sitesinde hazır bir doğrulama aracı bulunur.</li>
+    <li>Gazeteciler ve güvenlik uzmanları tarafından yıllardır kullanılır ve denetlenir.</li>
+    <li>Yazıcı desteği vardır (Ayarlar ▸ Yazıcılar).</li>
+  </ul>
+  <p><strong>Boyut ve sürüm:</strong> Ekim 2026 itibarıyla güncel sürüm <strong>Tails 7.15.1</strong>, USB görüntüsü yaklaşık <strong>1,8 GB</strong>. Siz her zaman sitedeki en güncel sürümü indirin.</p>
+  <p><strong>Neden daha hafif bir Linux değil?</strong> Birkaç yüz MB'lık çok hafif dağıtımlar da var; ancak çoğunda çevrimdışı mod, kapanışta bellek temizliği, kolay doğrulama ve geniş yazıcı desteği bir arada yok. Tails bu işin bütün ihtiyaçlarını karşılayan en küçük ve en kolay seçenektir.</p>
+  <div class="warn"><strong>Yedek seçenek:</strong> Yazıcınız Tails'te hiç tanınmazsa <strong>Linux Mint 22.3 Xfce</strong> (yaklaşık 2,8 GB, linuxmint.com) daha fazla yazıcı sürücüsü (yazıcıyı çalıştıran yazılım) içerir. Ancak "unutkan" olarak tasarlanmamıştır; kurulum yapmadan yalnızca canlı modda kullanın ve aşağıdaki çevrimdışı kurallarını aynen uygulayın. Daha da güvenli yol, yazıcıyı hiç kullanmayıp <a href="#elle">kelimeleri elle yazmaktır</a>.</div>
+</section>
+
+<section class="card" id="ihtiyac">
+  <h2>4. Neye ihtiyacınız var?</h2>
+  <ul>
+    <li><strong>Normal bilgisayarınız</strong> — yalnızca indirme ve USB hazırlama için.</li>
+    <li><strong>USB bellek 1</strong> — en az 8 GB; Tails buna yazılacak, içindeki her şey silinecek.</li>
+    <li><strong>USB bellek 2</strong> — herhangi bir boyut; bu uygulamanın klasörü buna konacak.</li>
+    <li><strong>Cüzdanı üreteceğiniz bilgisayar</strong> — tercihen dizüstü (laptop); masaüstü bilgisayarlara klavye ile kasa arasına gizli <em>donanım tuş kaydedici</em> (keylogger cihazı) takılabilir.</li>
+    <li><strong>USB kablolu bir yazıcı</strong> (isteğe bağlı) — ya da kâğıt ve iyi bir kalem.</li>
+  </ul>
+</section>
+
+<section class="card" id="indir">
+  <h2>5. İndirme ve sitenin güvenli olduğunu anlama</h2>
+  <h3>Doğru siteye gidin</h3>
+  <ul>
+    <li>Adresi tarayıcıya <strong>elle yazın</strong>: <code>https://tails.net</code>. Arama motorundaki reklamlara tıklamayın; dolandırıcılar sahte siteleri reklamla üste çıkarır.</li>
+    <li>Adres çubuğunda <strong>kilit simgesi</strong> ve <code>https://</code> olmalı (bağlantının şifreli olduğunu gösterir). Kilit tek başına sitenin dürüst olduğunu kanıtlamaz; <strong>alan adının harfi harfine doğru</strong> olması gerekir.</li>
+    <li>Benzer isimli sahte adreslere dikkat. Dolandırıcılar şu hileleri kullanır: tek harfi değiştirmek (küçük <code>l</code> yerine büyük <code>I</code>), araya kelime eklemek (<code>tails-free-download…</code>), farklı uzantı kullanmak (<code>.com</code>, <code>.org</code>) ya da doğru adı başa koyup sonunu değiştirmek (<code>tails.net.baska-site…</code>). Doğru adres yalnızca ve tam olarak <code>tails.net</code>'tir.</li>
+  </ul>
+  <h3>İndirdiğiniz dosyayı doğrulayın</h3>
+  <p>Tails'in indirme sayfasında <strong>"Select your download to verify…"</strong> (indirdiğinizi doğrulamak için seçin) düğmesi vardır. İndirdiğiniz dosyayı seçin; <strong>"Verification successful!"</strong> (doğrulama başarılı) yazısını görmeden devam etmeyin.</p>
+  <div class="tip"><strong>Benzetme:</strong> Doğrulama, bir paketin üzerindeki mühürle içindekinin aynı olduğunu kontrol etmek gibidir. Dosyada tek bir harf bile değişse sonuç "başarısız" çıkar.</div>
+  <h3>Bu uygulamanın zip dosyasını doğrulayın</h3>
+  <p>Zip'i GitHub'daki <em>Releases</em> (sürümler) sayfasından indirin; yanındaki <code>SHA256SUMS</code> dosyası zip'in <strong>SHA-256 değerini</strong> (dosyanın benzersiz parmak izi) içerir. Kendi hesapladığınız değer bununla <strong>birebir</strong> aynı olmalı:</p>
+  <ul>
+    <li><strong>Windows:</strong> Komut İstemi'ni açın ve <code>certutil -hashfile kripto_wallet_offline_yet-X.Y.Z.zip SHA256</code> yazın.</li>
+    <li><strong>macOS:</strong> Terminal'de <code>shasum -a 256 kripto_wallet_offline_yet-X.Y.Z.zip</code></li>
+    <li><strong>Linux:</strong> <code>sha256sum -c SHA256SUMS</code> ("OK" yazmalı).</li>
+  </ul>
+</section>
+
+<section class="card" id="usb">
+  <h2>6. USB belleği hazırlama</h2>
+  <ol>
+    <li>Tails sitesindeki kurulum sayfasını (<em>Install</em>) açın ve işletim sisteminizi seçin. Sitenin önerdiği <strong>yazma aracını</strong> (USB'ye işletim sistemi kopyalayan program; Windows ve macOS için genellikle <em>balenaEtcher</em>) kullanın.</li>
+    <li>Aracı açın: <em>Flash from file</em> (dosyadan yaz) ile doğruladığınız Tails dosyasını, <em>Select target</em> (hedef seç) ile <strong>USB bellek 1</strong>'i seçin, <em>Flash</em>'a basın.</li>
+    <li><strong>Dikkat:</strong> Seçtiğiniz USB'deki her şey silinir. Doğru belleği seçtiğinizden emin olun.</li>
+    <li><strong>USB bellek 2</strong>'ye bu uygulamanın zip'ini kopyalayın ve zip'i açın (klasör hâline getirin).</li>
+  </ol>
+</section>
+
+<section class="card" id="ag">
+  <h2>7. Ağ bağlantısını kesme — nasıl ve neden?</h2>
+  <h3>Neden?</h3>
+  <p>Gizli anahtarınız 64 harflik küçük bir metindir; sızması için tek bir küçük ağ paketi (internet üzerinden giden veri parçası) yeter. Bilgisayar internete hiç bağlı değilse, en kötü ihtimalle bile bilgi <em>dışarı çıkamaz</em>. Bu yönteme <strong>hava boşluğu</strong> (air gap — cihazla internet arasında fiziksel bağ olmaması) denir. Bu uygulama zaten ağa hiçbir şey göndermez; ama "güvenmek" yerine "imkânsız kılmak" ultra güvenliğin temelidir.</p>
+  <h3>Nasıl?</h3>
+  <ul>
+    <li><strong>Ethernet</strong> (internet kablosu) varsa çıkarın.</li>
+    <li>Dizüstü bilgisayarlarda <strong>uçak modu</strong> tuşuna basın ya da Wi-Fi anahtarını kapatın; <strong>Bluetooth</strong>'u da kapatın.</li>
+    <li>Tails'in karşılama ekranında <strong>Offline Mode</strong>'u açın (bölüm 8). Bu, Tails içinde de ağı devre dışı bırakır.</li>
+    <li>Yazıcının <strong>Wi-Fi'sini kapatın</strong> ya da ağ kablosunu çıkarın; yazıcıyı yalnızca <strong>USB kablosuyla</strong> bağlayın.</li>
+    <li>Telefonunuzu başka bir odaya bırakın: kamerası ekranı görebilir.</li>
+  </ul>
+</section>
+
+<section class="card" id="baslat">
+  <h2>8. Tails'i başlatma</h2>
+  <ol>
+    <li>USB bellek 1'i takın ve bilgisayarı yeniden başlatın.</li>
+    <li>Ekran açılırken <strong>açılış menüsü tuşuna</strong> (boot menu — bilgisayarın hangi diskten başlayacağını seçtiğiniz menü) art arda basın. Üreticiye göre genellikle <strong>F12</strong>, <strong>Esc</strong>, <strong>F9</strong>, <strong>F10</strong> veya <strong>F11</strong>'dir.</li>
+    <li>Listeden USB belleği seçin. Tails, çoğu bilgisayardaki <em>Secure Boot</em> (güvenli önyükleme — yalnızca imzalı sistemlerin açılmasına izin veren ayar) ile uyumludur.</li>
+    <li><strong>Karşılama ekranında</strong> (Welcome Screen) dilinizi ve klavye düzeninizi seçin.</li>
+    <li><strong>"+" (Additional Settings — ek ayarlar)</strong> düğmesine basın:
+      <ul>
+        <li><strong>Offline Mode</strong>'u açın.</li>
+        <li><strong>Administration Password</strong> (yönetici parolası — sistem ayarlarını değiştirme izni): yazıcı eklerken istenebilir; o oturumluk basit bir parola belirleyin.</li>
+      </ul>
+    </li>
+    <li><strong>Start Tails</strong> (Tails'i başlat) düğmesine basın.</li>
+  </ol>
+</section>
+
+<section class="card" id="uygulama">
+  <h2>9. Uygulamayı çalıştırma</h2>
+  <ol>
+    <li>USB bellek 2'yi takın. <strong>Files</strong> (Dosyalar) uygulamasıyla uygulama klasörünü <strong>Home</strong> (Ev klasörü — kullanıcının kişisel klasörü) içine kopyalayın. <em>Neden?</em> Tails'teki Tor Browser güvenlik için yalnızca Ev klasöründeki dosyaları okuyabilir.</li>
+    <li><strong>Tor Browser</strong>'ı açın. "Tor'a bağlı değil" türünde bir uyarı görmeniz normaldir; internete çıkmayacağız.</li>
+    <li><strong>Ctrl+O</strong> ile klasördeki <code>index.html</code>'i seçin.</li>
+    <li>Adres çubuğunun yanındaki <strong>kalkan simgesinden</strong> güvenlik seviyesinin <strong>Standard</strong> (standart) olduğunu kontrol edin. Daha yüksek seviyelerde JavaScript (sayfanın hesap yapan kodu) kapanır ve uygulama çalışmaz.</li>
+    <li>Uygulamanın en üstünde <strong>"Çevrimdışısınız"</strong> ve <strong>"Tüm kritik testler geçti"</strong> yazılarını görün. Görmüyorsanız devam etmeyin.</li>
+    <li>Cüzdanı adım adım üretin. Tor Browser'da en sorunsuz sonuç için <strong>İngilizce kelime listesi</strong> seçin ve arka plan resmi kullanmayın: Tor Browser, takip edilmeyi önlemek için sayfaların resim verisi okumasını (canvas — sayfanın çizim alanı) kısıtlar; tarayıcı izin sorarsa verebilirsiniz.</li>
+  </ol>
+</section>
+
+<section class="card" id="yazici">
+  <h2>10. Yazıcıyı çevrimdışı kullanma</h2>
+  <h3>Neden önemli?</h3>
+  <ul>
+    <li><strong>Ağ ve Wi-Fi yazıcılar</strong> belgeyi ağ üzerinden alır; ağdaki başka bir cihaz bunu görebilir.</li>
+    <li><strong>Bulut yazdırma</strong> (internet üzerinden yazdırma servisleri) belgenizi şirket sunucularına gönderir.</li>
+    <li>Bazı yazıcılar, özellikle ofis tipi büyük cihazlar, yazdırılan işleri kendi <strong>hafızasında veya diskinde</strong> saklayabilir.</li>
+    <li>Fotokopi merkezlerinde veya iş yerinde <strong>asla</strong> yazdırmayın.</li>
+  </ul>
+  <h3>Nasıl?</h3>
+  <ol>
+    <li>Evdeki basit bir yazıcıyı <strong>USB kablosuyla</strong> bağlayın; Wi-Fi'si kapalı olsun.</li>
+    <li>Tails'te <strong>Apps ▸ System Tools ▸ Settings ▸ Printers</strong> (Ayarlar ▸ Yazıcılar) yolunu açın. Günümüzdeki yazıcıların çoğu <em>sürücüsüz</em> (driverless — ek yazılım kurmadan, standart bir dille çalışan) olarak kendiliğinden tanınır.</li>
+    <li>Emin olmak için yazıcınızın modelini önceden, normal bilgisayarınızda <strong>OpenPrinting</strong> veritabanında (Linux'ta hangi yazıcıların çalıştığını listeleyen site) arayabilirsiniz.</li>
+    <li>Uygulamada <strong>PDF oluştur ve indir</strong>'e basın, inen PDF'i Tor Browser'da açın ve <strong>Ctrl+P</strong> ile yazdırın. Yazdırma ayarında ölçeğin <strong>%100 / gerçek boyut</strong> olduğundan emin olun, yoksa kart ölçüleri değişir.</li>
+    <li>Baskı bitince yazıcıyı kapatıp birkaç dakika fişten çekin; geçici hafızası boşalır.</li>
+  </ol>
+  <div class="tip"><strong>Mürekkep mi lazer mi?</strong> Lazer (toner) baskı suya ve zamana daha dayanıklıdır. Mürekkepli baskıyı nemden koruyun.</div>
+</section>
+
+<section class="card" id="elle">
+  <h2>11. Yazıcısız yol: kâğıda elle yazmak</h2>
+  <p>En güvenli yol yazıcıyı hiç kullanmamaktır: yazıcı yoksa yazıcı hafızası da yoktur.</p>
+  <ul>
+    <li>Kelimeleri <strong>numaralarıyla</strong>, büyük ve okunaklı harflerle yazın.</li>
+    <li>Yazdıktan sonra ekrandakiyle <strong>harf harf</strong> karşılaştırın; tek bir harf hatası cüzdanı açılmaz hâle getirir.</li>
+    <li>Adresinizi (para alacağınız açık bilgi) ayrı bir kâğıda yazabilirsiniz; adresin paylaşılmasında sakınca yoktur.</li>
+    <li>Uzun süreli saklama için kelimeleri <strong>metal bir plakaya</strong> (yangına ve suya dayanıklı yedek) kazımayı düşünün.</li>
+  </ul>
+</section>
+
+<section class="card" id="bitir">
+  <h2>12. Bitirme ve saklama</h2>
+  <ol>
+    <li>Kartları kılavuz çizgilerinden kesin.</li>
+    <li>Tails'i kapatın (sağ üst menüden <em>Power Off</em>). Bellek temizlenir; PDF dahil hiçbir şey kalmaz.</li>
+    <li>USB belleklerinizi çıkarın. Uygulama USB'sinde gizli bilgi yoktur (siz kaydetmediyseniz).</li>
+    <li>Kâğıtları sudan, ateşten ve güneşten korunan, yalnızca sizin bildiğiniz yerlere koyun. Shamir payları kullandıysanız her payı <strong>ayrı</strong> bir yere koyun.</li>
+    <li>Passphrase (ek gizli parola) kullandıysanız onu kartlardan <strong>ayrı</strong> saklayın.</li>
+    <li>Büyük bir tutar koymadan önce <strong>küçük bir miktar</strong> gönderip adresin doğru çalıştığını görün. Kurtarma kelimelerini test için <strong>asla</strong> internete bağlı bir cihaza yazmayın; deneme gerekiyorsa bunu yine çevrimdışı bir Tails oturumunda yapın.</li>
+  </ol>
+</section>
+
+<section class="card" id="hatalar">
+  <h2>13. Sık yapılan hatalar</h2>
+  <ul>
+    <li>Kelimelerin fotoğrafını çekmek veya telefona not almak.</li>
+    <li>PDF'i e-postayla kendine göndermek ya da buluta kaydetmek.</li>
+    <li>Wi-Fi yazıcıyla veya bir fotokopi merkezinde yazdırmak.</li>
+    <li>Tails'i doğrulamadan kullanmak ya da reklamdaki sahte siteden indirmek.</li>
+    <li>Kelimeleri tek bir kâğıtta, tek bir yerde tutmak (yangın, su, kayıp).</li>
+    <li>Passphrase'i kartın üzerine yazmak.</li>
+  </ul>
+</section>
+
+<footer class="muted">
+  <p>Bu rehberdeki sürüm ve boyut bilgileri Ekim 2026'da tails.net ve linuxmint.com'dan kontrol edilmiştir. Buradaki web adreslerini normal (internete bağlı) bilgisayarınızda açın.</p>
+  <p><a href="../index.html">← Uygulamaya dön</a></p>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!doctype html>
+<!--
+  guide/en.html — "Ultra security" guide (English). Opened from the button
+  at the top of index.html (new tab, so the app keeps its state).
+  Static page: no JavaScript, same Content-Security-Policy as the app.
+  Facts checked against tails.net and linuxmint.com in October 2026.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Ultra security guide — paper wallet</title>
+  <link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+<div id="app" class="guide">
+
+<header>
+  <div class="header-row">
+    <h1>Ultra security guide</h1>
+    <a class="lang-link" href="tr.html">Türkçe</a>
+  </div>
+  <p class="muted">A step-by-step route to creating your wallet and putting it on paper as close to 100% safely as possible. No technical knowledge needed; technical words are explained in brackets.</p>
+  <p><a href="../index.html">← Back to the app</a></p>
+</header>
+
+<section class="card">
+  <h2>Short version</h2>
+  <ol class="checklist">
+    <li>On your everyday computer, download the live Linux called <strong>Tails</strong> (an operating system that runs from a USB stick without installing anything) from its official site and <strong>verify</strong> it.</li>
+    <li>Download this app's zip file and check its <strong>SHA-256 value</strong> (the file's fingerprint).</li>
+    <li>Write Tails onto USB stick 1; copy this app's folder onto USB stick 2.</li>
+    <li>Unplug the network cable, turn off Wi-Fi and Bluetooth, disconnect the printer from the network and connect it with a <strong>USB cable</strong>.</li>
+    <li>Start the computer from the Tails USB stick; turn on <strong>Offline Mode</strong> on the welcome screen.</li>
+    <li>Copy the app folder into the <strong>Home</strong> folder and open <code>index.html</code> with Tor Browser.</li>
+    <li>Create the wallet, then print the PDF or write the words by hand.</li>
+    <li>Shut Tails down: everything in memory is erased. Store the papers safely.</li>
+  </ol>
+</section>
+
+<nav class="card toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#why">Why not use your current computer?</a></li>
+    <li><a href="#live">What is a live Linux and how does it run in memory?</a></li>
+    <li><a href="#distro">Which Linux? (Tails recommended)</a></li>
+    <li><a href="#need">What you need</a></li>
+    <li><a href="#download">Downloading and recognising a safe site</a></li>
+    <li><a href="#usb">Preparing the USB stick</a></li>
+    <li><a href="#network">Cutting the network — how and why</a></li>
+    <li><a href="#boot">Starting Tails</a></li>
+    <li><a href="#app">Running the app</a></li>
+    <li><a href="#printer">Using the printer offline</a></li>
+    <li><a href="#hand">Without a printer: writing by hand</a></li>
+    <li><a href="#finish">Finishing and storing</a></li>
+    <li><a href="#mistakes">Common mistakes</a></li>
+  </ol>
+</nav>
+
+<section class="card" id="why">
+  <h2>1. Why not use your current computer?</h2>
+  <p>The computer you use every day has been online for years; e-mail attachments were opened, programs installed, browser add-ons added. It may contain <strong>malware</strong> (viruses, spyware) you never noticed. Such programs can:</p>
+  <ul>
+    <li><strong>Keylogger</strong> (a program that records every key you press): steal the password you type.</li>
+    <li><strong>Screen capture</strong>: take a picture of the recovery words on your screen.</li>
+    <li><strong>Clipboard hijacker</strong> (a program that changes text you copy): swap the address you copied for the attacker's address.</li>
+    <li><strong>Cloud sync</strong> (OneDrive, Google Drive, iCloud): upload your PDF to the internet without you noticing.</li>
+    <li><strong>Swap and temporary files</strong> (swap — disk space where the operating system parks memory): secrets can leave traces on disk that can be recovered even after you delete them.</li>
+  </ul>
+  <div class="tip"><strong>Analogy:</strong> it is like writing your safe's combination in the middle of a crowded market without knowing who is watching. A clean live Linux is an empty, windowless room with the door locked.</div>
+</section>
+
+<section class="card" id="live">
+  <h2>2. What is a live Linux and how does it run in memory?</h2>
+  <p>A <strong>live Linux</strong> is an operating system (the basic software that runs a computer, like Windows) that starts from a USB stick and runs <em>without installing anything</em> on the computer's disk.</p>
+  <ul>
+    <li>When it starts, it loads itself into the computer's <strong>RAM</strong> (working memory — temporary storage that empties when the power goes off).</li>
+    <li>It does not touch the hard disk (the computer's permanent storage: HDD/SSD); your Windows and files stay exactly as they are.</li>
+    <li>The keys you create, the PDF and everything you type live only in RAM.</li>
+    <li>When you shut it down, RAM empties. Tails goes one step further: it overwrites memory with random data at shutdown, making the old content much harder to read back.</li>
+  </ul>
+  <div class="tip"><strong>Analogy:</strong> like writing on a blackboard with chalk instead of in a notebook. When you are done, the board is wiped and nothing remains; nothing was ever written into your notebook (your disk).</div>
+</section>
+
+<section class="card" id="distro">
+  <h2>3. Which Linux? (Tails recommended)</h2>
+  <p>Linux comes in many <strong>distributions</strong> (versions of Linux prepared by different teams). For this job we recommend <strong>Tails</strong>:</p>
+  <ul>
+    <li>It is designed to be <strong>amnesic</strong>: it leaves no trace after shutdown.</li>
+    <li>Its welcome screen has a one-click <strong>Offline Mode</strong>.</li>
+    <li>Its official site has a built-in tool to check that your download is genuine.</li>
+    <li>It has been used and audited for years by journalists and security experts.</li>
+    <li>It supports printers (Settings ▸ Printers).</li>
+  </ul>
+  <p><strong>Size and version:</strong> as of October 2026 the current version is <strong>Tails 7.15.1</strong>, a USB image of about <strong>1.8 GB</strong>. Always download the latest version shown on the site.</p>
+  <p><strong>Why not a lighter Linux?</strong> Very light distributions of a few hundred MB exist, but most lack the combination of offline mode, memory wiping at shutdown, easy verification and wide printer support. Tails is the smallest and easiest option that covers everything this job needs.</p>
+  <div class="warn"><strong>Fallback:</strong> if Tails does not recognise your printer at all, <strong>Linux Mint 22.3 Xfce</strong> (about 2.8 GB, linuxmint.com) includes more printer drivers (software that runs a printer). It is not designed to be amnesic: use it only in live mode without installing, and follow the offline rules below exactly. Even safer: skip the printer and <a href="#hand">write the words by hand</a>.</div>
+</section>
+
+<section class="card" id="need">
+  <h2>4. What you need</h2>
+  <ul>
+    <li><strong>Your everyday computer</strong> — only for downloading and preparing the USB sticks.</li>
+    <li><strong>USB stick 1</strong> — at least 8 GB; Tails will be written to it and everything on it erased.</li>
+    <li><strong>USB stick 2</strong> — any size; this app's folder goes on it.</li>
+    <li><strong>The computer to create the wallet on</strong> — preferably a laptop; on desktops a hidden <em>hardware keylogger</em> (a small device that records key presses) can sit between keyboard and computer.</li>
+    <li><strong>A USB-cable printer</strong> (optional) — or paper and a good pen.</li>
+  </ul>
+</section>
+
+<section class="card" id="download">
+  <h2>5. Downloading and recognising a safe site</h2>
+  <h3>Go to the right site</h3>
+  <ul>
+    <li><strong>Type the address yourself</strong>: <code>https://tails.net</code>. Do not click search-engine ads; scammers push fake sites to the top with ads.</li>
+    <li>The address bar must show a <strong>padlock</strong> and <code>https://</code> (the connection is encrypted). A padlock alone does not prove the site is honest; the <strong>domain name must be exactly right</strong>.</li>
+    <li>Watch out for look-alike addresses. Scammers swap a single letter (capital <code>I</code> for small <code>l</code>), add words (<code>tails-free-download…</code>), use another ending (<code>.com</code>, <code>.org</code>) or put the real name first and change the end (<code>tails.net.another-site…</code>). The only correct address is exactly <code>tails.net</code>.</li>
+  </ul>
+  <h3>Verify the file you downloaded</h3>
+  <p>The Tails download page has a <strong>"Select your download to verify…"</strong> button. Select the file you downloaded; do not continue until you see <strong>"Verification successful!"</strong>.</p>
+  <div class="tip"><strong>Analogy:</strong> verification is like checking that the seal on a parcel matches its contents. If even one letter of the file changed, the result is "failed".</div>
+  <h3>Verify this app's zip</h3>
+  <p>Download the zip from the GitHub <em>Releases</em> page; the <code>SHA256SUMS</code> file next to it holds the zip's <strong>SHA-256 value</strong> (the file's unique fingerprint). The value you compute must match it <strong>exactly</strong>:</p>
+  <ul>
+    <li><strong>Windows:</strong> open Command Prompt and type <code>certutil -hashfile kripto_wallet_offline_yet-X.Y.Z.zip SHA256</code></li>
+    <li><strong>macOS:</strong> in Terminal, <code>shasum -a 256 kripto_wallet_offline_yet-X.Y.Z.zip</code></li>
+    <li><strong>Linux:</strong> <code>sha256sum -c SHA256SUMS</code> (must print "OK").</li>
+  </ul>
+</section>
+
+<section class="card" id="usb">
+  <h2>6. Preparing the USB stick</h2>
+  <ol>
+    <li>Open the install page (<em>Install</em>) on the Tails site and choose your operating system. Use the <strong>writing tool</strong> the site recommends (a program that copies an operating system onto a USB stick; usually <em>balenaEtcher</em> on Windows and macOS).</li>
+    <li>In the tool, choose your verified Tails file with <em>Flash from file</em>, choose <strong>USB stick 1</strong> with <em>Select target</em>, and press <em>Flash</em>.</li>
+    <li><strong>Careful:</strong> everything on the selected stick is erased. Make sure you picked the right one.</li>
+    <li>Copy this app's zip onto <strong>USB stick 2</strong> and extract it (turn it into a folder).</li>
+  </ol>
+</section>
+
+<section class="card" id="network">
+  <h2>7. Cutting the network — how and why</h2>
+  <h3>Why?</h3>
+  <p>Your secret key is a short text of 64 characters; a single small network packet (a piece of data sent over the internet) is enough to leak it. If the computer is not connected at all, the information <em>cannot get out</em> even in the worst case. This is called an <strong>air gap</strong> (no physical link between the device and the internet). This app never sends anything anyway, but ultra security means making a leak impossible instead of trusting that it will not happen.</p>
+  <h3>How?</h3>
+  <ul>
+    <li>Unplug the <strong>Ethernet</strong> (network) cable if there is one.</li>
+    <li>On laptops press the <strong>airplane mode</strong> key or turn off the Wi-Fi switch; turn off <strong>Bluetooth</strong> too.</li>
+    <li>Turn on <strong>Offline Mode</strong> on the Tails welcome screen (section 8). This disables networking inside Tails as well.</li>
+    <li><strong>Turn off the printer's Wi-Fi</strong> or unplug its network cable; connect it only with a <strong>USB cable</strong>.</li>
+    <li>Leave your phone in another room: its camera can see the screen.</li>
+  </ul>
+</section>
+
+<section class="card" id="boot">
+  <h2>8. Starting Tails</h2>
+  <ol>
+    <li>Plug in USB stick 1 and restart the computer.</li>
+    <li>While the screen turns on, press the <strong>boot menu key</strong> (the menu where you choose which disk the computer starts from) repeatedly. Depending on the maker it is usually <strong>F12</strong>, <strong>Esc</strong>, <strong>F9</strong>, <strong>F10</strong> or <strong>F11</strong>.</li>
+    <li>Choose the USB stick from the list. Tails works with <em>Secure Boot</em> (a setting that only lets signed systems start) on most computers.</li>
+    <li>On the <strong>Welcome Screen</strong>, choose your language and keyboard layout.</li>
+    <li>Press the <strong>"+" (Additional Settings)</strong> button:
+      <ul>
+        <li>Turn on <strong>Offline Mode</strong>.</li>
+        <li><strong>Administration Password</strong> (permission to change system settings): may be asked for when adding a printer; set a simple password for this session.</li>
+      </ul>
+    </li>
+    <li>Press <strong>Start Tails</strong>.</li>
+  </ol>
+</section>
+
+<section class="card" id="app">
+  <h2>9. Running the app</h2>
+  <ol>
+    <li>Plug in USB stick 2. With the <strong>Files</strong> app, copy the app folder into <strong>Home</strong> (the user's personal folder). <em>Why?</em> For safety, Tor Browser in Tails can only read files in the Home folder.</li>
+    <li>Open <strong>Tor Browser</strong>. A warning that Tor is not connected is normal; we are not going online.</li>
+    <li>Press <strong>Ctrl+O</strong> and choose <code>index.html</code> in the folder.</li>
+    <li>Check with the <strong>shield icon</strong> next to the address bar that the security level is <strong>Standard</strong>. Higher levels turn off JavaScript (the page's calculating code) and the app will not work.</li>
+    <li>At the top of the app you must see <strong>"You are offline"</strong> and <strong>"All critical tests passed"</strong>. If not, stop.</li>
+    <li>Create the wallet step by step. For the smoothest result in Tor Browser choose the <strong>English word list</strong> and no background image: to prevent tracking, Tor Browser restricts pages from reading image data (canvas — the page's drawing area); if it asks for permission you may allow it.</li>
+  </ol>
+</section>
+
+<section class="card" id="printer">
+  <h2>10. Using the printer offline</h2>
+  <h3>Why it matters</h3>
+  <ul>
+    <li><strong>Network and Wi-Fi printers</strong> receive the document over the network; another device on that network may see it.</li>
+    <li><strong>Cloud printing</strong> (printing services over the internet) sends your document to company servers.</li>
+    <li>Some printers, especially large office machines, can keep printed jobs in their own <strong>memory or disk</strong>.</li>
+    <li><strong>Never</strong> print at a copy shop or at work.</li>
+  </ul>
+  <h3>How</h3>
+  <ol>
+    <li>Connect a simple home printer with a <strong>USB cable</strong>, with its Wi-Fi off.</li>
+    <li>In Tails open <strong>Apps ▸ System Tools ▸ Settings ▸ Printers</strong>. Most current printers are recognised automatically as <em>driverless</em> (working through a standard language without extra software).</li>
+    <li>To be sure, look up your printer model beforehand, on your everyday computer, in the <strong>OpenPrinting</strong> database (a site listing which printers work on Linux).</li>
+    <li>In the app press <strong>Create and download PDF</strong>, open the downloaded PDF in Tor Browser and print with <strong>Ctrl+P</strong>. Make sure the scale is <strong>100% / actual size</strong>, otherwise the card dimensions change.</li>
+    <li>After printing, switch the printer off and unplug it for a few minutes; its temporary memory empties.</li>
+  </ol>
+  <div class="tip"><strong>Inkjet or laser?</strong> Laser (toner) prints resist water and time better. Keep inkjet prints away from moisture.</div>
+</section>
+
+<section class="card" id="hand">
+  <h2>11. Without a printer: writing by hand</h2>
+  <p>The safest way is not to use a printer at all: no printer, no printer memory.</p>
+  <ul>
+    <li>Write the words with their <strong>numbers</strong>, in large, clear letters.</li>
+    <li>Compare what you wrote with the screen <strong>letter by letter</strong>; a single wrong letter makes the wallet unrecoverable.</li>
+    <li>You may write your address (the public data for receiving money) on a separate paper; sharing the address is safe.</li>
+    <li>For long-term storage consider stamping the words into a <strong>metal plate</strong> (a fire- and water-resistant backup).</li>
+  </ul>
+</section>
+
+<section class="card" id="finish">
+  <h2>12. Finishing and storing</h2>
+  <ol>
+    <li>Cut the cards along the guide lines.</li>
+    <li>Shut Tails down (top-right menu, <em>Power Off</em>). Memory is wiped; nothing, including the PDF, remains.</li>
+    <li>Remove your USB sticks. The app stick holds no secrets (unless you saved some there).</li>
+    <li>Keep the papers where only you know, safe from water, fire and sunlight. If you used Shamir shares, keep each share in a <strong>different</strong> place.</li>
+    <li>If you used a passphrase (an extra secret password), store it <strong>separately</strong> from the cards.</li>
+    <li>Before depositing a large amount, send a <strong>small amount</strong> and check that the address works. <strong>Never</strong> type the recovery words into an internet-connected device to test them; if you must test, do it in an offline Tails session again.</li>
+  </ol>
+</section>
+
+<section class="card" id="mistakes">
+  <h2>13. Common mistakes</h2>
+  <ul>
+    <li>Taking a photo of the words or noting them on a phone.</li>
+    <li>E-mailing the PDF to yourself or saving it to the cloud.</li>
+    <li>Printing on a Wi-Fi printer or at a copy shop.</li>
+    <li>Using Tails without verifying it, or downloading it from a fake site found through an ad.</li>
+    <li>Keeping the words on a single paper in a single place (fire, water, loss).</li>
+    <li>Writing the passphrase on the card.</li>
+  </ul>
+</section>
+
+<footer class="muted">
+  <p>Version and size information in this guide was checked on tails.net and linuxmint.com in October 2026. Open the web addresses mentioned here on your everyday (online) computer.</p>
+  <p><a href="../index.html">← Back to the app</a></p>
+</footer>
+</div>
+</body>
+</html>

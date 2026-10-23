@@ -235,3 +235,26 @@ dialog.help-dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
 .help-body p { margin: 0 0 10px; line-height: 1.55; }
 .help-actions { text-align: right; }
 .input-row button.help, .meter-row button.help, .generate-row button.help { align-self: center; }
+
+/* ---- Ultra security guide (guide/*.html) and its button ------------------- */
+.guide-row { display: flex; align-items: center; margin: 4px 0 0; }
+a.guide-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 2px solid var(--good);
+  border-radius: var(--radius);
+  background: var(--good-bg);
+  color: var(--good);
+  font-weight: 700;
+  text-decoration: none;
+}
+a.guide-btn:hover, a.guide-btn:focus-visible { background: var(--good); color: #fff; }
+.guide .lang-link { font-weight: 600; }
+.guide h3 { margin-top: 16px; }
+.guide li { margin: 4px 0; line-height: 1.55; }
+.guide code { font-family: var(--mono); font-size: 0.9em; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; overflow-wrap: anywhere; }
+.guide .checklist li::marker { color: var(--accent); font-weight: 700; }
+.guide .toc ol { columns: 2 16rem; }
+.guide .tip, .guide .warn { border-radius: var(--radius); padding: 10px 14px; margin: 12px 0; }
+.guide .tip { background: var(--good-bg); color: var(--text); border-left: 4px solid var(--good); }
+.guide .warn { background: var(--warn-bg); color: var(--text); border-left: 4px solid var(--warn); }
