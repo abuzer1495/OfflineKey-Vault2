@@ -25,6 +25,8 @@
         t.ok(V.bip39.validateMnemonic(c.mnemonic, wl), 'mnemonic checksum valid');
         var seed = V.bip39.mnemonicToSeedSync(c.mnemonic, b39.passphrase);
         t.equalHex(seed, c.seed, 'mnemonic + passphrase -> seed');
+        t.equalHex(WG.bip39.mnemonicToSeed(c.mnemonic, b39.passphrase), c.seed, 'WG.bip39.mnemonicToSeed (app implementation)');
+        t.equal(WG.bip39.entropyToMnemonic(B.hexToBytes(c.entropy)), c.mnemonic, 'WG.bip39.entropyToMnemonic');
         t.equal(V.bip32.HDKey.fromMasterSeed(seed).privateExtendedKey, c.xprv, 'seed -> BIP32 root xprv');
       },
     });
