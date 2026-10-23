@@ -238,7 +238,7 @@ dialog.help-dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
 
 /* ---- Ultra security guide (guide/*.html) and its button ------------------- */
 .guide-row { display: flex; align-items: center; margin: 4px 0 0; }
-a.guide-btn {
+a.guide-btn, button.guide-btn {
   display: inline-block;
   padding: 8px 16px;
   border: 2px solid var(--good);
@@ -248,7 +248,7 @@ a.guide-btn {
   font-weight: 700;
   text-decoration: none;
 }
-a.guide-btn:hover, a.guide-btn:focus-visible { background: var(--good); color: #fff; }
+a.guide-btn:hover, a.guide-btn:focus-visible, button.guide-btn:hover, button.guide-btn:focus-visible { background: var(--good); color: #fff; }
 .guide .lang-link { font-weight: 600; }
 .guide h3 { margin-top: 16px; }
 .guide li { margin: 4px 0; line-height: 1.55; }
