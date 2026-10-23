@@ -59,6 +59,48 @@
     return b;
   }
 
+  /**
+   * The "ultra security" guide button.
+   * Multi-file edition: a link opening guide/<lang>.html in a new tab (the
+   * wallet state here is kept). Single-file edition (tools/release/single-file.mjs
+   * embeds the guides as <template id="guide-tr|en">): the guide opens in-page.
+   */
+  function guideButton() {
+    var label = '🛡 ' + t('guideButton');
+    if (!document.getElementById('guide-tr')) {
+      return el('a', { class: 'guide-btn', id: 'guide-link', href: 'guide/' + WG.i18n.lang() + '.html', target: '_blank', rel: 'noopener' }, label);
+    }
+    return button(label, 'guide-btn', function () { openGuide(WG.i18n.lang()); }, 'guide-link');
+  }
+
+  /** Show an embedded guide as a full-screen layer (single-file edition). */
+  function openGuide(lang) {
+    var layer = el('div', { class: 'guide-overlay', role: 'dialog', 'aria-modal': 'true', id: 'guide-overlay' });
+    function show(l) {
+      WG.dom.clear(layer);
+      var bar = el('div', { class: 'guide-overlay-bar' }, button('✕ ' + t('helpClose'), 'primary', function () { layer.remove(); }));
+      var body = el('div', { class: 'guide' });
+      body.appendChild(document.getElementById('guide-' + l).content.cloneNode(true));
+      WG.dom.append(layer, [bar, body]);
+      layer.scrollTop = 0;
+    }
+    // Links inside the guide: "back to the app" closes, tr/en switch language, #anchors scroll.
+    layer.addEventListener('click', function (e) {
+      var a = e.target.closest('a');
+      if (!a) return;
+      var href = a.getAttribute('href') || '';
+      if (/index\.html$/.test(href)) { e.preventDefault(); layer.remove(); }
+      else if (/^(tr|en)\.html$/.test(href)) { e.preventDefault(); show(href.slice(0, 2)); }
+      else if (href.charAt(0) === '#') {
+        e.preventDefault();
+        var target = layer.querySelector('[id="' + href.slice(1) + '"]');
+        if (target) target.scrollIntoView();
+      }
+    });
+    show(lang);
+    document.body.appendChild(layer);
+  }
+
   /** A navigation button together with its "?" help button. */
   function navItem(btn, helpKey) {
     return el('span', { class: 'nav-item' }, btn, WG.help.button(helpKey));
@@ -78,7 +120,8 @@
         el('ul', { class: 'test-list' }, r.results.map(function (x) {
           return el('li', { class: x.ok ? 'ok' : 'fail' }, (x.ok ? '✓ ' : '✗ ') + x.title + (x.ok ? '' : ' — ' + x.error));
         })),
-        el('p', null, el('a', { href: 'tests/test.html' }, t('fullTests')))));
+        // tests/test.html only exists in the multi-file edition.
+        document.getElementById('guide-tr') ? null : el('p', null, el('a', { href: 'tests/test.html' }, t('fullTests')))));
   }
 
   /** Step indicator: 1 Entropy › 2 Settings › 3 Wallet › 4 Print. */
@@ -162,10 +205,7 @@
       el('header', null,
         el('div', { class: 'header-row' }, el('h1', null, t('appTitle')), navItem(langBtn, 'lang')),
         el('p', { class: 'muted' }, t('appSubtitle') + ' v' + WG.version),
-        // Static guide page in a new tab, so the wallet state here is kept.
-        el('p', { class: 'guide-row' },
-          el('a', { class: 'guide-btn', id: 'guide-link', href: 'guide/' + WG.i18n.lang() + '.html', target: '_blank', rel: 'noopener' }, '🛡 ' + t('guideButton')),
-          WG.help.button('guide'))),
+        el('p', { class: 'guide-row' }, guideButton(), WG.help.button('guide'))),
       el('div', { class: 'banner ' + (state.online ? 'banner-warn' : 'banner-ok'), role: 'status' }, state.online ? t('netOnline') : t('netOffline'), WG.help.button('offline')),
       viewSelftest(),
       healthy ? viewStepper() : null,

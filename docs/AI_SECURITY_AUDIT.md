@@ -13,7 +13,7 @@ Report every way an attacker could learn, predict, alter or exfiltrate generated
 6. Coin derivations live in `js/derive/` and `js/coins/`; optional security features (SLIP-39, BIP38) live in `js/secure/`.
 7. `js/core/selftest*.js` and `js/coins/selftest-coins.js` run known-answer tests at start-up, and `WG.selftest.requireHealthy()` blocks generation if any fails.
 8. UI code is in `js/ui/`, PDF output in `js/output/`; all text is inserted with `textContent` via `js/ui/dom.js`; the security guide pages `guide/*.html` are static HTML with no scripts.
-9. The Content-Security-Policy `<meta>` in `index.html` sets `default-src 'none'`, `script-src 'self'`, `connect-src 'none'` and `form-action 'none'`.
+9. The Content-Security-Policy `<meta>` in `index.html` sets `default-src 'none'`, `script-src 'self'`, `connect-src 'none'` and `form-action 'none'`; the phone edition `OfflineKey-Vault-X.Y.Z.html`, built by `tools/release/single-file.mjs`, inlines the same files and replaces `'self'` with the SHA-256 hashes of exactly those inlined scripts and stylesheet.
 10. `tests/test.html` runs every test against official vectors pinned to upstream commits in `tests/vectors/`, and `tools/browser-test/run.mjs` runs it headless in Chrome, Edge and Firefox.
 
 ## 2. Threat model
@@ -24,7 +24,7 @@ Out of scope: a fully compromised operating system, physical theft of printed ca
 ## 3. Checks (report each as PASS / FAIL / UNSURE with file:line evidence)
 
 1. **No exfiltration:** no `fetch`, `XMLHttpRequest`, `WebSocket`, `sendBeacon`, `navigator.*` network API, `<img>`/`<a>`/`<form>` with remote URLs, `postMessage` to other windows, or storage API (`localStorage`, `sessionStorage`, IndexedDB, cookies) is reachable with secret data outside `vendor/` (inside `vendor/`, only jsPDF's URL-loading helpers use XHR and CSP blocks them).
-2. **CSP is effective:** the policy in `index.html` and `tests/test.html` matches §1.9, has no `unsafe-inline` or `unsafe-eval`, and the page uses no inline scripts, inline handlers, `eval`, `new Function` or string `setTimeout`.
+2. **CSP is effective:** the policy in `index.html`, `tests/test.html` and the generated single-file edition matches §1.9, has no `unsafe-inline` or `unsafe-eval`, the single-file hashes cover only the inlined project files, and no page uses inline handlers, `eval`, `new Function` or string `setTimeout`.
 3. **RNG correctness:** every key, mnemonic entropy, SLIP-39 identifier and share randomness, and Monero seed comes from `pool.extract` (or `extractDiceOnly` only when the user chose dice-only); no `Math.random` or library-internal RNG (e.g. `generateMnemonic`, `randomBytes`) feeds secrets.
 4. **Mixing cannot reduce strength:** confirm the absorb and extract formulas in `entropy-pool.js` match its header and `selftest-entropy.js`, that user input cannot replace or cancel the CSPRNG bytes, and that the credited-bit gate (`minCreditedBits`) is enforced on every extraction path.
 5. **Derivation correctness:** each coin's path, version bytes, address encoding and secret format match its specification, and each is covered by an independent vector in `tests/suites/*.js` and a critical KAT.

@@ -40,6 +40,17 @@ language, with an example and an everyday analogy — no crypto knowledge needed
    type the values) and press **Create and download PDF**.
 5. Print the PDF, cut along the guides, delete the PDF file, close the browser.
 
+## Phones
+
+Phones cannot open the multi-file zip edition (Android opens local files
+through `content://` URLs, so `js/` and `css/` next to the page cannot load).
+Each release therefore also ships **`OfflineKey-Vault-X.Y.Z.html`**, a
+single-file edition with everything inlined (its CSP allows only the
+inlined code, by SHA-256 hash). Open it on Android with Chrome or Firefox in
+airplane mode. iPhone/iPad cannot run local HTML files offline. The layout
+adapts to phone screens and touch input. A phone is not an air-gapped
+computer — see section 14 of the guide.
+
 ## Safety
 
 - Every generated wallet is verified before it is shown: backups are decoded
@@ -51,7 +62,7 @@ language, with an example and an everyday analogy — no crypto knowledge needed
 
 ## Verify / audit
 
-- `tests/test.html` — 214 tests: official vectors from BIP32/39/84/86/38,
+- `tests/test.html` — 215 tests: official vectors from BIP32/39/84/86/38,
   SLIP-0010/0039, SEP-0005, CIP-3, the Monero project, Trezor firmware and
   Ian Coleman's BIP39 tool, all pinned to upstream commits.
 - `vendor/VENDOR.md` + `vendor/SHA256SUMS` — exact third-party versions

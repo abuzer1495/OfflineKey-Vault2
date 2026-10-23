@@ -1,6 +1,6 @@
 # Plan — OfflineKey Vault: portable, çevrimdışı, çoklu coin kâğıt cüzdan üreticisi
 
-**Durum:** v0.4.1 (2026-10-23, pre-release). Repo: [`snipeTR/OfflineKey-Vault`](https://github.com/snipeTR/OfflineKey-Vault) (eski adı `kripto_wallet_offline_yet`), dal `main`.
+**Durum:** v0.5.0 (2026-10-23, pre-release). Repo: [`snipeTR/OfflineKey-Vault`](https://github.com/snipeTR/OfflineKey-Vault) (eski adı `kripto_wallet_offline_yet`), dal `main`.
 Odak: basılıp kesilmeye uygun kâğıt cüzdan kartları.
 Önceki proje `monero-PDF-wallet-generator` (PHP, yalnızca Monero) GitHub'dan ve yerelden kaldırıldı; geçmişi yalnızca yerel bir git bundle yedeğinde duruyor.
 
@@ -94,7 +94,8 @@ tools/browser-test/           Chrome/Edge/Firefox'ta file:// testi, Firefox'ta t
 tools/dev/node-harness.mjs    Hızlı geliştirme döngüsü (Node VM)
 tools/vectors/                Resmi vektörleri commit'e sabitli kaynaklardan içe aktarma
 tools/vendor-build/           vendor/ dosyalarını tekrar üretme
-tools/release/make-zip.mjs    Tekrar üretilebilir release zip + SHA256SUMS
+tools/release/make-zip.mjs    Tekrar üretilebilir release zip + tek dosya sürümü + SHA256SUMS
+tools/release/single-file.mjs Telefonlar için tek dosya sürümü (her şey gömülü, CSP özetli)
 guide/tr.html guide/en.html   Ultra güvenlik rehberi (statik, script yok)
 docs/PLAN.md                  Bu dosya
 docs/AI_SECURITY_AUDIT.md     Yapay zekâ denetim tarifnamesi
@@ -147,23 +148,25 @@ Notlar (arayüzde ve kılavuz sayfasında gösterilir): XRP ve Stellar minimum r
 - **Yazdır:** sayfanın 2/5 ölçekli SVG önizlemesi; üst/sol boşluk, kart genişliği/yüksekliği ve kartlar arası boşluk çizgi sürükleyerek veya alanlardan ayarlanır. Önizleme ve PDF aynı `WG.pdf.placements()` fonksiyonunu kullanır.
 - **PDF:** ön yüz gizli / arka yüz açık kartlar; eski projenin tüm düzen ayarları (marj, kart boyutu, boşluk, iç/dış kılavuz ve rengi, yazı rengi, yazı arka planı ve opaklığı, gölge, A4/A5/sığdır, dikey/yatay, çift taraflı baskı için aynalı sayfalar, ön/arka arka plan resmi), gömülü Unicode font, CJK kelimeler için canvas, TR/EN kılavuz sayfası.
 - **Yardım:** her seçenek ve butonun yanında küçük "?" butonu; kripto bilmeyen birine örnek ve benzetmeyle kısa açıklama (82 konu, TR/EN).
-- **Ultra güvenlik rehberi:** üstteki yeşil buton yeni sekmede `guide/tr.html` / `guide/en.html`'i açar. Statik sayfa (script yok, aynı CSP). İçerik: neden günlük bilgisayar kullanılmamalı, canlı Linux'un RAM'de çalışması, Tails önerisi (7.15.1, ~1,8 GB; yedek Linux Mint 22.3 Xfce), indirme ve sitenin/dosyanın doğrulanması (Tails doğrulama aracı, SHA-256), USB hazırlama, ağın kesilmesi ve nedeni (hava boşluğu), Tails'i Offline Mode ile başlatma, uygulamayı Ev klasöründen Tor Browser'da açma (güvenlik seviyesi Standard), USB kablolu yazıcıyla çevrimdışı baskı, elle yazma, saklama, sık hatalar. Teknik terimler parantez içinde açıklanır. Bilgiler Ekim 2026'da tails.net ve linuxmint.com'dan doğrulandı.
+- **Ultra güvenlik rehberi:** üstteki yeşil buton yeni sekmede `guide/tr.html` / `guide/en.html`'i açar. Statik sayfa (script yok, aynı CSP). İçerik: neden günlük bilgisayar kullanılmamalı, canlı Linux'un RAM'de çalışması, Tails önerisi (7.15.1, ~1,8 GB; yedek Linux Mint 22.3 Xfce), indirme ve sitenin/dosyanın doğrulanması (Tails doğrulama aracı, SHA-256), USB hazırlama, ağın kesilmesi ve nedeni (hava boşluğu), Tails'i Offline Mode ile başlatma, uygulamayı Ev klasöründen Tor Browser'da açma (güvenlik seviyesi Standard), USB kablolu yazıcıyla çevrimdışı baskı, elle yazma, saklama, sık hatalar. Teknik terimler parantez içinde açıklanır. Bilgiler Ekim 2026'da tails.net ve linuxmint.com'dan doğrulandı. 14. bölüm telefon/tablet kullanımının risklerini ve yapılacakları anlatır.
+- **Mobil:** 600 px altı ekranlarda daha dar kenar boşlukları, 2×2 adım göstergesi, alt alta gezinme butonları, 2 sütun kelime ızgarası; dokunmatik ekranlarda (`pointer: coarse`) büyütülmüş "?" butonları, en az 40 px yükseklikte kontroller ve önizlemede geniş tutma alanı. Izgaralar ekrandan geniş olamaz (`minmax(min(…, 100%), 1fr)`).
+- **Tek dosya sürümü (telefonlar):** Android dosya yöneticileri HTML'i `content://` ile açtığından yan dosyalar yüklenemez; `OfflineKey-Vault-X.Y.Z.html` her şeyi gömülü taşır, rehberler `<template>` olarak gömülür ve sayfa içinde açılır. iPhone/iPad yerel HTML'de kod çalıştırmadığı için desteklenmez.
 
 ## 9. Güvenlik sertleştirme
 
 - Gizli veri DOM'a yalnızca `textContent` ile; `eval`, `new Function`, `innerHTML` yok (kod taramasıyla doğrulandı).
 - `localStorage` / `sessionStorage` / IndexedDB / çerez yok; `console` ile gizli veri basılmaz.
 - `WG` ve `WGVendor` modülleri yüklendikten sonra değiştirilemez.
-- Açılışta 36 kritik test; biri bile düşerse üretim kilitlenir.
+- Açılışta 37 kritik test (kripto, CSPRNG, CSP, vendor kilidi ve PDF/QR/font kütüphanelerinin yüklendiği dahil); biri bile düşerse üretim kilitlenir.
 - Üretici her cüzdanı göstermeden önce yedeği yeniden çözer, adresleri yeniden türetir, basılacak her anahtarı geri çözüp karşılaştırır.
 - "Temizle" anahtar dizilerini sıfırlar, girilen parolaları boşaltır; "Baştan başla" entropiyi de siler.
 - Arka plan resimleri canvas'tan geçirilip JPEG'e çevrilir (EXIF/konum silinir).
-- Release: tekrar üretilebilir zip + `SHA256SUMS`.
+- Release: tekrar üretilebilir zip, telefonlar için tek dosya sürümü (yalnızca gömülü script'lerin SHA-256 özetlerine izin veren CSP) ve ikisini kapsayan `SHA256SUMS`.
 
 ## 10. Test
 
-- `tests/test.html`: 214 test — kütüphane KAT'ları, 24 BIP39 + 17 BIP32 vektörü, BIP84/86, SLIP-0010, SEP-0005, CIP-3, 45 SLIP-39 vektörü, BIP38, Monero, Trezor ve Ian Coleman vektörleri, entropi, üretici, CSP kanarya testi. Vektörler commit'e sabitlenmiş resmi kaynaklardan gelir.
-- `tools/browser-test/run.mjs`: Chrome, Edge ve Firefox'ta `file://` üzerinden `index.html`, `tests/test.html` ve iki rehber sayfası (CSP/konsol hatası olmamalı); Firefox'ta tam arayüz akışı (entropi → 10 coin → üret → göster/gizle → önizlemede sürükleme → PDF → baştan başla) ve 124 "?" butonunun tamamı.
+- `tests/test.html`: 215 test — kütüphane KAT'ları, 24 BIP39 + 17 BIP32 vektörü, BIP84/86, SLIP-0010, SEP-0005, CIP-3, 45 SLIP-39 vektörü, BIP38, Monero, Trezor ve Ian Coleman vektörleri, entropi, üretici, CSP kanarya testi. Vektörler commit'e sabitlenmiş resmi kaynaklardan gelir.
+- `tools/browser-test/run.mjs`: Chrome, Edge ve Firefox'ta `file://` üzerinden `index.html`, `tests/test.html`, iki rehber sayfası ve her çalıştırmada yeniden üretilen tek dosya sürümü (CSP/konsol hatası olmamalı). Firefox'ta tam arayüz akışı (entropi → 10 coin → üret → göster/gizle → önizlemede sürükleme → PDF dosyasının gerçekten inmesi → baştan başla) ve bütün "?" butonları: masaüstünde `index.html` ile, 360×740 telefon boyutunda tek dosya sürümüyle; telefon turunda her adımda yatay taşma olmamalı. Test indirmeleri geçici profil klasörüne gider.
 - Her release'ten önce zip'ten çıkan kopya da aynı testlerden geçirilir; yayımlanan zip'in hash'i indirilerek doğrulanır.
 - Litecoin ltc1 için bağımsız vektör bulunamadı; Trezor LTC anahtarı + BIP84 kodlaması + SLIP-0173 "ltc" önekinden birleştirilmiş vektör kullanılıyor.
 
@@ -180,10 +183,11 @@ Notlar (arayüzde ve kılavuz sayfasında gösterilir): XRP ve Stellar minimum r
 | v0.3.1 | PLAN.md koda göre baştan güncellendi. |
 | v0.4.0 | "Ultra güvenlik istiyorsanız bunu okuyun" butonu ve TR/EN rehber sayfaları (Tails ile çevrimdışı üretim ve baskı). |
 | v0.4.1 | Proje adı **OfflineKey Vault** oldu (repo `snipeTR/OfflineKey-Vault`); başlıklar, belgeler, PDF bilgisi ve release zip adı (`OfflineKey-Vault-X.Y.Z.zip`) güncellendi. |
+| v0.5.0 | Mobil uyum: telefon/dokunmatik düzeni, telefonlar için tek dosya sürümü (`OfflineKey-Vault-X.Y.Z.html`, gömülü rehber, özet tabanlı CSP), rehbere telefon/tablet bölümü, PDF/QR/font kütüphaneleri için kritik başlangıç testi; testler telefon boyutunda da çalışıyor ve indirmeler artık kullanıcının İndirilenler klasörüne düşmüyor. |
 
 ## 12. Açık işler
 
-- Safari (macOS/iOS) ve Android Chrome elle test edilmedi (bu makinede yok).
+- Safari (macOS) ve gerçek Android cihazlar elle test edilmedi (bu makinede yok); tek dosya sürümü masaüstü tarayıcılarda ve 360×740 telefon boyutunda test ediliyor. iPhone/iPad yerel HTML dosyasında kod çalıştırmadığı için desteklenmiyor.
 - Litecoin ltc1 için bağımsız bir referans vektörü bulunursa birleştirilmiş vektörün yerine konacak.
 - Ekranda önizlemenin tam 2/5 boyutu, ekran ölçeklemesi %100 iken geçerli.
 - Rehberdeki Tails adımları (Offline Mode, Tor Browser'da yerel dosya, yazıcı ekleme) belgelere dayanıyor; gerçek bir Tails oturumunda uçtan uca denenmedi. Tails sürümü değiştikçe rehberdeki sürüm/boyut bilgisi güncellenmeli.

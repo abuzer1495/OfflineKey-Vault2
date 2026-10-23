@@ -258,3 +258,32 @@ a.guide-btn:hover, a.guide-btn:focus-visible { background: var(--good); color: #
 .guide .tip, .guide .warn { border-radius: var(--radius); padding: 10px 14px; margin: 12px 0; }
 .guide .tip { background: var(--good-bg); color: var(--text); border-left: 4px solid var(--good); }
 .guide .warn { background: var(--warn-bg); color: var(--text); border-left: 4px solid var(--warn); }
+
+/* ---- In-page guide layer (single-file edition, app.js openGuide) ------------ */
+button.guide-btn { font-size: 1rem; cursor: pointer; }
+.guide-overlay { position: fixed; inset: 0; z-index: 100; overflow: auto; background: var(--bg); padding: 0 16px 32px; }
+.guide-overlay .guide { max-width: 900px; margin: 0 auto; }
+.guide-overlay-bar { position: sticky; top: 0; display: flex; justify-content: flex-end; max-width: 900px; margin: 0 auto; padding: 10px 0; background: var(--bg); }
+
+/* ---- Phones and touch screens ------------------------------------------- */
+/* Grids never ask for more than the screen width (very small phones). */
+.coin-grid { grid-template-columns: repeat(auto-fill, minmax(min(230px, 100%), 1fr)); }
+.coin-cards { grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); }
+.form-grid { grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); }
+@media (max-width: 600px) {
+  #app { padding: 16px 12px 40px; }
+  h1 { font-size: 1.35rem; }
+  .card { padding: 12px; }
+  .stepper li { flex: 1 1 40%; padding: 6px; font-size: 0.9rem; }
+  .wizard-nav { flex-direction: column-reverse; align-items: stretch; }
+  .wizard-nav .nav-item { justify-content: space-between; }
+  .wizard-nav .nav-item > button:not(.help) { flex: 1 1 auto; }
+  .word-grid { columns: 2; }
+  canvas.pad { height: 220px; }
+}
+/* Fingers need bigger targets than mouse pointers. */
+@media (pointer: coarse) {
+  button.help { width: calc(1em + 12px); height: calc(1em + 12px); }
+  button:not(.help), select, input[type="text"], input[type="password"], input[type="number"] { min-height: 40px; }
+  svg.page-preview .handle line:first-child { stroke-width: 12; }   /* wider invisible grip */
+}

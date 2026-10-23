@@ -16,7 +16,8 @@
  *        one pointer move adds exactly 0.5 bit (no duplicate listeners)
  *   On steps 1-4 every "?" help button is clicked: its dialog must show a
  *   real explanation, and TR/EN help texts must cover the same keys.
- *   Returns a JSON string { coinCards, checksOk, revealOk, dragOk, typeOk, pdfMsg, restartOk, helpButtons, helpMissing, error }.
+ *   On phone-size viewports (< 600 px) each step must fit without horizontal scrolling.
+ *   Returns a JSON string { coinCards, checksOk, revealOk, dragOk, typeOk, pdfMsg, restartOk, helpButtons, helpMissing, overflow, error }.
  */
 (async () => {
   const $ = (id) => document.getElementById(id);
@@ -25,7 +26,16 @@
     for (let i = 0; i < ms / 100; i++) { const v = fn(); if (v) return v; await new Promise((r) => setTimeout(r, 100)); }
     return null;
   };
-  const out = { helpButtons: 0, helpMissing: [] };
+  const out = { helpButtons: 0, helpMissing: [], overflow: [] };
+  // On phone-size viewports the page must never scroll sideways; report what sticks out.
+  const checkWidth = (step) => {
+    if (window.innerWidth >= 600) return;
+    const max = document.documentElement.clientWidth;
+    if (document.documentElement.scrollWidth <= max + 1) return;
+    const wide = [...document.querySelectorAll('#app *')].filter((e) => e.getBoundingClientRect().right > max + 1)
+      .slice(0, 3).map((e) => e.tagName.toLowerCase() + '.' + String(e.className).split(' ')[0]);
+    out.overflow.push(step + ': ' + document.documentElement.scrollWidth + 'px ' + wide.join(','));
+  };
   // Click every visible "?" and check that its dialog holds a real sentence.
   const checkHelp = () => {
     document.querySelectorAll('#app button.help').forEach((b) => {
@@ -40,9 +50,20 @@
   const tr = Object.keys(WG.helpTexts.tr).sort().join(), en = Object.keys(WG.helpTexts.en).sort().join();
   if (tr !== en) out.helpMissing.push('TR/EN help keys differ');
   try {
-    // The ultra-security guide link must point to the guide in the UI language.
-    out.guideOk = /^guide\/(tr|en)\.html$/.test($('guide-link').getAttribute('href')) && $('guide-link').target === '_blank';
+    // Ultra-security guide: a link to guide/<lang>.html (multi-file edition), or
+    // a button opening the embedded guide in-page (single-file edition).
+    const g = $('guide-link');
+    if (g.tagName === 'A') {
+      out.guideOk = /^guide\/(tr|en)\.html$/.test(g.getAttribute('href')) && g.target === '_blank';
+    } else {
+      g.click();
+      const layer = $('guide-overlay');
+      const opened = !!layer && layer.textContent.length > 3000 && !!layer.querySelector('[id]');
+      layer.querySelector('.guide-overlay-bar button').click();
+      out.guideOk = opened && !$('guide-overlay');
+    }
     checkHelp();                           // step 1
+    checkWidth('step1');
     $('dice-input').value = '3615244326155142363125642351'.repeat(4).slice(0, 94);
     $('dice-add').click();
     await frame();
@@ -50,6 +71,7 @@
     $('ent-apply').click();
     await frame();
     checkHelp();                           // step 2 (default options)
+    checkWidth('step2');
 
     for (const id of ['btc', 'ltc', 'doge', 'eth', 'trx', 'xrp', 'sol', 'xlm', 'ada', 'xmr']) {
       const box = $('coin-' + id);
@@ -62,6 +84,7 @@
     out.coinCards = document.querySelectorAll('.result .coin-card').length;
     out.checksOk = document.querySelectorAll('.result .test-list .fail').length === 0 && document.querySelectorAll('.result .test-list .ok').length > 0;
     checkHelp();                           // step 3
+    checkWidth('step3');
 
     // Secrets must not be in the DOM until "Show", and must leave it on "Hide".
     const secret = document.querySelector('.result .item.secret');
@@ -75,6 +98,7 @@
     $('to-print').click();
     await frame();
     checkHelp();                           // step 4
+    checkWidth('step4');
     // Drag the card-width line 20 px to the right.
     const width0 = $('pdf-cardWidth').value;
     const line = document.querySelectorAll('.handle-x')[1];   // x-handles in order: marginLeft, cardWidth, gap

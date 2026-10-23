@@ -33,7 +33,7 @@ const csp = readFileSync(join(repo, 'index.html'), 'utf8').match(/http-equiv="Co
 
 const ctx = {
   console, crypto: globalThis.crypto, performance: globalThis.performance,
-  setTimeout, clearTimeout, TextEncoder, TextDecoder, BigInt,
+  setTimeout, clearTimeout, TextEncoder, TextDecoder, BigInt, atob, btoa,   // atob/btoa: needed by jsPDF at load
   screen: { width: 0, height: 0 }, devicePixelRatio: 1, navigator: { language: 'en', onLine: false },
   document: { querySelector: () => ({ getAttribute: () => csp }) },
 };

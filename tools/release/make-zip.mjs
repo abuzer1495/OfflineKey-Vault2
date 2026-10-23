@@ -2,9 +2,12 @@
  * tools/release/make-zip.mjs
  *
  * PURPOSE
- *   Builds the end-user download: dist/OfflineKey-Vault-<version>.zip
- *   plus dist/SHA256SUMS. The zip contains every git-tracked file (so
- *   node_modules and local junk never ship) inside one top-level folder.
+ *   Builds the end-user downloads:
+ *     dist/OfflineKey-Vault-<version>.zip   every git-tracked file (so node_modules
+ *                                           and local junk never ship) in one folder
+ *     dist/OfflineKey-Vault-<version>.html  single-file edition for phones
+ *                                           (tools/release/single-file.mjs)
+ *     dist/SHA256SUMS                       checksums of both
  *
  * REPRODUCIBLE
  *   Files are sorted, every entry gets the timestamp of the last commit and
@@ -21,6 +24,7 @@ import { createHash } from 'node:crypto';
 import { deflateRawSync, crc32 } from 'node:zlib';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildSingleFile } from './single-file.mjs';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const git = (cmd) => execSync('git ' + cmd, { cwd: repo, encoding: 'utf8' });
@@ -69,6 +73,9 @@ const zip = Buffer.concat([...local, cd, end]);
 
 mkdirSync(join(repo, 'dist'), { recursive: true });
 writeFileSync(join(repo, 'dist', name + '.zip'), zip);
-const sum = createHash('sha256').update(zip).digest('hex');
-writeFileSync(join(repo, 'dist', 'SHA256SUMS'), sum + '  ' + name + '.zip\n');
-console.log(files.length + ' files -> dist/' + name + '.zip (' + zip.length + ' bytes)\n' + sum + '  ' + name + '.zip');
+const single = buildSingleFile(repo);
+writeFileSync(join(repo, 'dist', name + '.html'), single);
+const sha = (data) => createHash('sha256').update(data).digest('hex');
+const sums = sha(zip) + '  ' + name + '.zip\n' + sha(Buffer.from(single, 'utf8')) + '  ' + name + '.html\n';
+writeFileSync(join(repo, 'dist', 'SHA256SUMS'), sums);
+console.log(files.length + ' files -> dist/' + name + '.zip (' + zip.length + ' bytes), dist/' + name + '.html (' + Buffer.byteLength(single) + ' bytes)\n' + sums);

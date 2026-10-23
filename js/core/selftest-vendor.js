@@ -67,6 +67,18 @@
   });
 
   reg({
+    id: 'env.output-libs', group: 'environment', critical: true,
+    title: 'PDF, QR and font libraries are loaded (jsPDF, qrcode-generator, DejaVu font)',
+    run: function (t) {
+      // A script blocked by the CSP or missing from the folder would otherwise
+      // only show up after the wallet was generated, when the PDF is built.
+      t.ok(window.jspdf && typeof window.jspdf.jsPDF === 'function', 'vendor/jspdf.umd.js');
+      t.ok(typeof window.qrcode === 'function', 'vendor/qrcode.js');
+      t.ok(window.WGFonts && window.WGFonts.mono && window.WGFonts.monoBold, 'vendor/dejavu-fonts.js');
+    },
+  });
+
+  reg({
     id: 'env.csp-meta', group: 'environment', critical: true,
     title: 'Page declares the network kill-switch CSP (connect-src and form-action \'none\')',
     run: function (t) {
@@ -81,7 +93,10 @@
       t.equal(policy['default-src'], "'none'", 'default-src');
       t.equal(policy['connect-src'], "'none'", 'connect-src');
       t.equal(policy['form-action'], "'none'", 'form-action');
-      t.equal(policy['script-src'], "'self'", 'script-src (no inline/eval/remote scripts)');
+      // 'self' (multi-file edition) or only exact hashes of the inlined scripts
+      // (single-file edition); never unsafe-inline, unsafe-eval or remote hosts.
+      var scriptSrc = policy['script-src'] || '';
+      t.ok(scriptSrc === "'self'" || /^('sha256-[A-Za-z0-9+/]+=*'\s*)+$/.test(scriptSrc.trim()), "script-src is 'self' or hashes only: " + scriptSrc.slice(0, 40));
     },
   });
 
