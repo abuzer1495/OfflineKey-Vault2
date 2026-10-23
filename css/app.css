@@ -164,7 +164,6 @@ input[type="password"] { flex: 1 1 200px; min-width: 0; }
 .backup, .share { margin: 12px 0; }
 .word-grid { columns: 3 9rem; font-family: var(--mono); font-size: 1rem; margin: 8px 0; padding-left: 2.2em; }
 .word-grid li { break-inside: avoid; padding: 1px 0; }
-.masked { filter: blur(6px); user-select: none; -webkit-user-select: none; }
 .coin-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin: 12px 0; }
 .coin-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; background: var(--bg); }
 .coin-card h3 { margin-top: 0; }

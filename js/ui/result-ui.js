@@ -8,8 +8,9 @@
  *       with QR code, public / watch-only data and private keys.
  *
  * SECURITY NOTES
- *   - Every secret starts masked (blurred, not selectable); QR codes of
- *     secrets are only drawn after the user presses "Show".
+ *   - Secrets (words, private keys) are written into the DOM only after the
+ *     user presses "Show" and removed again on "Hide"; their QR codes are
+ *     drawn only while shown.
  *   - Text goes through WG.dom (textContent only).
  *   - "Clear" asks app.js to wipe the set and remove this panel.
  */
@@ -19,16 +20,21 @@
   var el = WG.dom.el;
   var t = WG.i18n.t;
 
-  /** A secret value block: masked text + reveal button + lazy QR. */
+  var HIDDEN = '•••• •••• •••• ••••';
+
+  /**
+   * A secret value block. The value is written into the DOM only while
+   * shown, and removed again on "Hide" (not merely blurred).
+   */
   function secretBlock(label, value, withQr) {
-    var text = el('div', { class: 'secret-value masked mono', 'aria-hidden': 'true' }, value);
+    var text = el('div', { class: 'secret-value mono muted' }, HIDDEN);
     var qrSlot = el('div', { class: 'qr-slot' });
     var shown = false;
     var btn = el('button', { type: 'button', class: 'reveal' }, t('btnShow'));
     btn.addEventListener('click', function () {
       shown = !shown;
-      text.classList.toggle('masked', !shown);
-      text.setAttribute('aria-hidden', shown ? 'false' : 'true');
+      text.textContent = shown ? value : HIDDEN;
+      text.classList.toggle('muted', !shown);
       btn.textContent = shown ? t('btnHide') : t('btnShow');
       WG.dom.clear(qrSlot);
       if (shown && withQr) qrSlot.appendChild(sizedQr(value, 150));
@@ -52,15 +58,18 @@
     return c;
   }
 
-  /** Numbered word grid (masked) for BIP39 words or a SLIP-39 share. */
+  /** Numbered word grid for BIP39 words or a SLIP-39 share; words exist in the DOM only while shown. */
   function wordGrid(words) {
-    var grid = el('ol', { class: 'word-grid masked', 'aria-hidden': 'true' }, words.map(function (w) { return el('li', null, w); }));
+    var grid = el('ol', { class: 'word-grid' });
+    var shown = false;
     var btn = el('button', { type: 'button', class: 'reveal' }, t('btnShow'));
     btn.addEventListener('click', function () {
-      var masked = grid.classList.toggle('masked');
-      grid.setAttribute('aria-hidden', masked ? 'true' : 'false');
-      btn.textContent = masked ? t('btnShow') : t('btnHide');
+      shown = !shown;
+      WG.dom.clear(grid);
+      words.forEach(function (w) { grid.appendChild(el('li', shown ? null : { class: 'muted' }, shown ? w : '••••')); });
+      btn.textContent = shown ? t('btnHide') : t('btnShow');
     });
+    words.forEach(function () { grid.appendChild(el('li', { class: 'muted' }, '••••')); });
     return el('div', { class: 'words' }, btn, grid);
   }
 

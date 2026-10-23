@@ -1,62 +1,93 @@
-# kripto_wallet_offline_yet — Offline Paper Wallet Generator (in development)
+# kripto_wallet_offline_yet — Offline Paper Wallet Generator
 
-> **Status:** milestone M1 (entropy collection). It does **not** generate wallets yet.
-> Successor of the retired `monero-PDF-wallet-generator` project (PHP/TCPDF, Monero only).
-> Roadmap: [docs/PLAN.md](docs/PLAN.md).
+A portable, fully offline paper-wallet generator that runs in any modern
+browser by opening a single HTML file, and prints cut-ready wallet cards.
 
-A portable, fully offline paper-wallet generator focused on printable,
-cut-ready wallet cards. It runs in any modern browser by opening a single
-HTML file. Planned coins: Bitcoin, Litecoin, Dogecoin,
-Ethereum, Tron, XRP, Solana, Stellar, Cardano and Monero, with extra user
-entropy (dice, coin flips, mouse, keyboard) mixed into the browser CSPRNG and
-optional security features (BIP39 passphrase, SLIP-39 Shamir shares, BIP38).
+**Coins:** Bitcoin (Native SegWit / Taproot / Legacy), Litecoin, Dogecoin,
+Ethereum, Tron, XRP, Solana, Stellar, Cardano, Monero.
+
+**Wallet types:** BIP39 recovery words (12/24, all official languages,
+optional passphrase) · SLIP-39 Shamir shares (M-of-N, Trezor compatible) ·
+single keys (classic paper wallet, optional BIP38 for Bitcoin). Monero
+always gets its own 25-word seed.
+
+**Entropy:** the browser CSPRNG is always used and mixed (HKDF-SHA512) with
+your own dice rolls, coin flips, mouse/touch movement and key timings; an
+optional verifiable "dice only" mode follows the Coldcard method.
+
+> Status: 0.1.0 pre-release. Read the safety notes below and test-restore
+> every wallet with a small amount before trusting it with real funds.
 
 ## Use
 
-1. Download the release zip and extract it.
-2. Disconnect from the internet.
-3. Double-click `index.html`.
+1. Download the release zip, verify it (`sha256sum -c SHA256SUMS`), extract it.
+2. Disconnect the computer from the internet.
+3. Double-click `index.html`. The page runs its cryptographic self-tests and
+   refuses to generate keys if any of them fails.
+4. Collect entropy (section 1), choose coins and options (2), press
+   **Generate wallet** (3), then **Create and download PDF** (4).
+5. Print the PDF, cut along the guides, delete the PDF file, close the browser.
 
-No server, no install, no build step. The page refuses to generate keys unless
-its cryptographic self-tests pass in your browser.
+## Safety
 
-## Verify
+- Every generated wallet is verified before it is shown: backups are decoded
+  again, addresses re-derived, printed keys decoded and compared.
+- Nothing is ever sent to the network: a Content-Security-Policy blocks all
+  connections (verified by `tests/test.html` in each browser).
+- Never photograph or scan the secret sides; keep the passphrase (if any)
+  separately — it is never printed.
 
-- Open `tests/test.html` to run the full test suite (official BIP39/BIP32
-  vectors, FIPS/RFC known answers, CSP network-block check).
-- `cd vendor && sha256sum -c SHA256SUMS` checks the bundled libraries;
-  `vendor/VENDOR.md` lists their exact npm versions.
+## Verify / audit
+
+- `tests/test.html` — 214 tests: official vectors from BIP32/39/84/86/38,
+  SLIP-0010/0039, SEP-0005, CIP-3, the Monero project, Trezor firmware and
+  Ian Coleman's BIP39 tool, all pinned to upstream commits.
+- `vendor/VENDOR.md` + `vendor/SHA256SUMS` — exact third-party versions
+  (noble/scure crypto, jsPDF, qrcode-generator, DejaVu font), rebuilt
+  reproducibly by `tools/vendor-build`.
+- `docs/AI_SECURITY_AUDIT.md` — a compact specification for auditing the
+  project with an AI model.
+- `docs/PLAN.md` — design and progress log.
 
 ## Project layout
 
-| Path | What it is |
+| Path | Content |
 |---|---|
-| `index.html` | The app (only file an end user opens) |
-| `js/core/` | Namespace, byte helpers, self-test registry and known-answer tests |
-| `js/ui/` | i18n (TR/EN), DOM builder (textContent only), app entry |
-| `vendor/` | Pinned, audited libraries (noble/scure, jsPDF, qrcode-generator) |
-| `tests/` | Offline test page, official vectors, test suites |
-| `tools/` | Maintainer tools: vendor bundling, vector import, headless browser tests |
-| `docs/` | Plan and (later) the AI security-audit specification |
+| `index.html` | the app (the only file a user opens) |
+| `js/core/` | namespace, byte helpers, self-tests, entropy pool and collectors |
+| `js/derive/`, `js/coins/` | BIP39, BIP32/SLIP-0010, Cardano keys; one module per coin family |
+| `js/secure/`, `js/wallet/` | SLIP-39, BIP38; the self-verifying generator |
+| `js/ui/`, `js/output/` | panels, TR/EN texts, QR codes, PDF cards and manual |
+| `vendor/` | pinned third-party code |
+| `tests/` | offline test page, official vectors, suites |
+| `tools/` | maintainer tools (vendor build, vector import, browser tests, release zip) |
 
 ## Maintainers
 
 ```sh
-# Rebuild /vendor from pinned npm packages (reproducible)
+node tools/browser-test/run.mjs                 # index.html + tests in Chrome/Edge/Firefox
+node tools/dev/node-harness.mjs [filter]        # fast test loop in Node.js
 cd tools/vendor-build && npm ci --ignore-scripts && npm run build
-
-# Run index.html and tests/test.html headless in installed Chrome/Edge/Firefox
-node tools/browser-test/run.mjs
+node tools/release/make-zip.mjs                 # dist/*.zip + SHA256SUMS
 ```
 
 ---
 
-## Türkçe özet
+## Türkçe
 
-Tek bir HTML dosyası açılarak tüm güncel tarayıcılarda tamamen çevrimdışı
-çalışan, taşınabilir kâğıt cüzdan üreticisi. **Şu an M1 (entropi toplama) aşamasında,
-henüz cüzdan üretmez.** Kullanım: zip'i indir, aç, internet bağlantısını kes,
-`index.html` dosyasına çift tıkla. Tüm testler için `tests/test.html`.
-Yol haritası: [docs/PLAN.md](docs/PLAN.md). Önceki proje: emekliye ayrılan `monero-PDF-wallet-generator` (PHP, yalnızca Monero).
+Tek bir HTML dosyası açılarak tüm güncel tarayıcılarda **tamamen
+çevrimdışı** çalışan, kesilip saklanmaya hazır kâğıt cüzdan kartları basan
+taşınabilir cüzdan üreticisi.
+
+**Kullanım:** Release zip'ini indirin, `SHA256SUMS` ile doğrulayın, açın;
+internet bağlantısını kesin; `index.html`'e çift tıklayın. Entropi toplayın
+(1), coin ve seçenekleri belirleyin (2), **Cüzdan üret**'e basın (3), sonra
+**PDF oluştur ve indir** (4). PDF'i yazdırın, kılavuz çizgilerinden kesin,
+dosyayı silin ve tarayıcıyı kapatın.
+
+**Güvenlik:** Her cüzdan gösterilmeden önce otomatik doğrulanır; sayfa ağa
+hiçbir veri gönderemez (CSP). Gizli yüzlerin fotoğrafını çekmeyin;
+passphrase hiçbir kâğıda basılmaz, ayrı saklayın. Gerçek para koymadan önce
+küçük bir miktarla geri yükleme testi yapın.
 
 License: MIT — see [LICENSE](LICENSE).

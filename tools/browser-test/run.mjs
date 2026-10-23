@@ -157,7 +157,7 @@ async function testFirefox(b, url) {
       const smoke = JSON.parse((await send('script.evaluate', {
         expression: readFileSync(join(here, 'smoke.js'), 'utf8'), target: { context }, awaitPromise: true,
       })).result.value);
-      if (smoke.error || smoke.coinCards !== 10 || !smoke.checksOk || !smoke.pdfMsg) problems.push('ui flow: ' + JSON.stringify(smoke));
+      if (smoke.error || smoke.coinCards !== 10 || !smoke.checksOk || !smoke.revealOk || !smoke.pdfMsg) problems.push('ui flow: ' + JSON.stringify(smoke));
       // Optional sample PDFs for visual review.
       if (process.env.WG_SAMPLE_DIR) {
         const samples = JSON.parse((await send('script.evaluate', {

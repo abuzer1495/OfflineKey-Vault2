@@ -20,5 +20,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Third-party components in /vendor keep their own licenses (MIT); see
-vendor/VENDOR.md for the exact packages, versions and checksums.
+Third-party components keep their own licenses:
+- vendor/wg-crypto.js: @noble/* and @scure/* by Paul Miller (MIT)
+- vendor/jspdf.umd.js: jsPDF (MIT); vendor/qrcode.js: qrcode-generator by Kazuhiko Arase (MIT)
+- vendor/dejavu-fonts.js: DejaVu fonts (Bitstream Vera license, see vendor/DejaVu-LICENSE.txt)
+- js/data/monero-wordlist-english.js: The Monero Project (BSD-3-Clause)
+- js/data/slip39-wordlist.js: SLIP-0039 / trezor python-shamir-mnemonic (MIT)
+See vendor/VENDOR.md for exact versions and checksums.

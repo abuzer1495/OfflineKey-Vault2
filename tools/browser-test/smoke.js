@@ -8,8 +8,9 @@
  *     2. 94 more dice          -> enough entropy (259 >= 256 bits)
  *     3. select all 10 coins, press "Generate wallet"
  *     4. the result panel must show 10 coin cards and only passing checks
- *     5. press "Create and download PDF" -> success message
- *   Returns a JSON string { meter16, coinCards, checksOk, pdfMsg, error }.
+ *     5. a secret appears in the DOM only after "Show" and leaves on "Hide"
+ *     6. press "Create and download PDF" -> success message
+ *   Returns a JSON string { meter16, coinCards, checksOk, revealOk, pdfMsg, error }.
  */
 (async () => {
   const $ = (id) => document.getElementById(id);
@@ -40,6 +41,15 @@
     await until(() => document.querySelector('.result .coin-card'), 30000);
     out.coinCards = document.querySelectorAll('.result .coin-card').length;
     out.checksOk = document.querySelectorAll('.result .test-list .fail').length === 0 && document.querySelectorAll('.result .test-list .ok').length > 0;
+
+    // Secrets must not be in the DOM until "Show", and must leave it on "Hide".
+    const secret = document.querySelector('.result .item.secret');
+    const value = () => secret.querySelector('.secret-value').textContent;
+    const before = value();
+    secret.querySelector('.reveal').click();
+    const shown = value();
+    secret.querySelector('.reveal').click();
+    out.revealOk = /•/.test(before) && !/•/.test(shown) && shown.length > 20 && value() === before;
 
     $('pdf-build').click();
     out.pdfMsg = await until(() => { const m = document.querySelector('.pdf .field-msg').textContent; return /PDF/.test(m) && !/…/.test(m) ? m : null; }, 30000);

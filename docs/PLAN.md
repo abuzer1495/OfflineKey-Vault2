@@ -1,6 +1,6 @@
 # Plan — kripto_wallet_offline_yet: portable, çevrimdışı, çoklu coin kâğıt cüzdan üreticisi
 
-Durum: taslak (2026-10-22). Repo: `snipeTR/kripto_wallet_offline_yet` (2026-10-23'te ayrı repoya taşındı, temiz geçmiş). Odak: basılıp kesilmeye uygun kâğıt cüzdan kartları. Önceki proje `monero-PDF-wallet-generator` (PHP, yalnızca Monero) GitHub'dan kaldırıldı; tam geçmişi yerel bir git bundle yedeğinde duruyor.
+Durum: v0.1.0 yayımlandı (2026-10-23). Repo: `snipeTR/kripto_wallet_offline_yet` (2026-10-23'te ayrı repoya taşındı, temiz geçmiş). Odak: basılıp kesilmeye uygun kâğıt cüzdan kartları. Önceki proje `monero-PDF-wallet-generator` (PHP, yalnızca Monero) GitHub'dan kaldırıldı; tam geçmişi yerel bir git bundle yedeğinde duruyor.
 
 ## 1. Değişmez kurallar
 
@@ -174,11 +174,23 @@ Kullanıcı arayüzde ayrı ayrı açıp kapatabilir:
 - Arayüz: bit sayacı + eşik seçimi (128/256/512, vars. 256), fare/dokunma alanı, zar tamponu (düzeltilebilir, "Ekle" ile işlenir), yazı-tura, serbest metin, kaynak dağılımı, sıfırlama. Sayfa sabit bölmelerle çiziliyor; yazarken arayüz yeniden kurulmuyor.
 - 4 yeni kritik KAT (beklenen değerler Node.js crypto ile bağımsız hesaplandı) + 8 davranış testi → toplam 80 test, Chrome/Edge/Firefox'ta geçti. Firefox'ta arayüz duman testi (6 zar + 1 tura = 16 bit).
 
-## 12. AI güvenlik denetim tarifnamesi — iskelet
+### M2–M6 — tamamlandı (2026-10-23)
+- 10 coin: BTC (BIP84/86/44), LTC (BIP84/44), DOGE, ETH, TRX, XRP, SOL, XLM, ADA (Icarus + BIP32-Ed25519, Shelley base adres), XMR (kendi 25 kelimesi). BIP39 seed fonksiyonu doğrudan spesifikasyon metninden yazıldı (kütüphane 3 kelimelik referans vektörleri reddettiği için).
+- SLIP-39 (python-shamir-mnemonic'in satır satır çevirisi; 45 resmi vektörün tamamı geçiyor), BIP38 (non-EC-multiply; resmi vektörler).
+- `js/wallet/generator.js`: bip39 / slip39 / tek anahtar modları; her cüzdan dönmeden önce yedekler yeniden çözülüyor, adresler yeniden türetiliyor, basılan her anahtar geri çözülüp karşılaştırılıyor. Cardano SLIP-39 ve tek anahtar modunda yok (BIP39 entropisi gerekir).
+- Test vektörleri commit'e sabitlenmiş kaynaklardan: bitcoin/bips, satoshilabs/slips, stellar SEP-5, CIP-3, Monero fonksiyonel testleri, Trezor firmware fixture'ları, Ian Coleman. Litecoin ltc1 için bağımsız vektör bulunamadı; Trezor LTC anahtarı + BIP84 kodlaması + SLIP-0173 "ltc" önekinden birleştirilmiş vektör kullanıldı.
+- Her coin için bir kritik başlangıç KAT'ı (`js/coins/selftest-coins.js`).
 
-Kod bittiğinde gerçek yapıya göre yazılır; en az cümle, eksiksiz:
-1. Amaç ve tehdit modeli (çevrimdışı, tek kullanıcı, kötü niyetli ağ/eklenti/kopya zip).
-2. Veri akışı: entropi → seed → anahtar → adres → PDF.
-3. Dosya haritası ve her dosyanın sorumluluğu.
-4. Kontrol listesi: ağ çağrısı/CSP, CSPRNG'nin her yolda kullanımı, karıştırma doğruluğu, türetme yolları, test vektörleri, gizli verinin DOM/log/storage'a sızması, vendor hash doğrulaması, yorum–kod tutarlılığı, zip bütünlüğü.
-5. Beklenen çıktı formatı (bulgu, dosya:satır, ciddiyet, kanıt).
+### M7 — tamamlandı (2026-10-23)
+- Panel 2 (ayarlar), 3 (sonuç; gizli bilgiler yalnızca "Göster"e basılınca DOM'a yazılır), 4 (PDF).
+- PDF: ön yüz gizli / arka yüz açık kartlar, eski projenin tüm düzen ayarları, köşe kesim kılavuzları, çift taraflı baskı için aynalanmış sayfalar, "sığdır", arka plan resimleri (canvas ile JPEG'e yeniden kodlanır, meta veri silinir), gömülü DejaVu Sans Mono, CJK kelimeler için canvas, TR/EN kılavuz sayfası.
+- Firefox'ta tam kullanıcı akışı testi: entropi → 10 coin → üret → PDF.
+
+### M8 — tamamlandı (2026-10-23)
+- `docs/AI_SECURITY_AUDIT.md`, README, LICENSE üçüncü taraf notları.
+- `tools/release/make-zip.mjs`: git'te izlenen dosyalardan tekrar üretilebilir zip + SHA256SUMS; v0.1.0 GitHub pre-release.
+- Safari / iOS elle test edilmedi (bu makinede yok).
+
+## 12. AI güvenlik denetim tarifnamesi
+
+Bkz. [`docs/AI_SECURITY_AUDIT.md`](AI_SECURITY_AUDIT.md).
