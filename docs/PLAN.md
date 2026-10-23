@@ -1,6 +1,6 @@
-# Plan — kripto_wallet_offline_yet: portable, çevrimdışı, çoklu coin kâğıt cüzdan üreticisi
+# Plan — OfflineKey Vault: portable, çevrimdışı, çoklu coin kâğıt cüzdan üreticisi
 
-**Durum:** v0.4.0 (2026-10-23, pre-release). Repo: `snipeTR/kripto_wallet_offline_yet`, dal `main`.
+**Durum:** v0.4.1 (2026-10-23, pre-release). Repo: [`snipeTR/OfflineKey-Vault`](https://github.com/snipeTR/OfflineKey-Vault) (eski adı `kripto_wallet_offline_yet`), dal `main`.
 Odak: basılıp kesilmeye uygun kâğıt cüzdan kartları.
 Önceki proje `monero-PDF-wallet-generator` (PHP, yalnızca Monero) GitHub'dan ve yerelden kaldırıldı; geçmişi yalnızca yerel bir git bundle yedeğinde duruyor.
 
@@ -179,6 +179,7 @@ Notlar (arayüzde ve kılavuz sayfasında gösterilir): XRP ve Stellar minimum r
 | v0.3.0 | Her seçenek ve butona "?" yardım butonu (81 konu, TR/EN); akış testi bütün butonlara basıyor. |
 | v0.3.1 | PLAN.md koda göre baştan güncellendi. |
 | v0.4.0 | "Ultra güvenlik istiyorsanız bunu okuyun" butonu ve TR/EN rehber sayfaları (Tails ile çevrimdışı üretim ve baskı). |
+| v0.4.1 | Proje adı **OfflineKey Vault** oldu (repo `snipeTR/OfflineKey-Vault`); başlıklar, belgeler, PDF bilgisi ve release zip adı (`OfflineKey-Vault-X.Y.Z.zip`) güncellendi. |
 
 ## 12. Açık işler
 

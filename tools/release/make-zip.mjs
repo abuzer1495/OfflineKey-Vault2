@@ -2,7 +2,7 @@
  * tools/release/make-zip.mjs
  *
  * PURPOSE
- *   Builds the end-user download: dist/kripto_wallet_offline_yet-<version>.zip
+ *   Builds the end-user download: dist/OfflineKey-Vault-<version>.zip
  *   plus dist/SHA256SUMS. The zip contains every git-tracked file (so
  *   node_modules and local junk never ship) inside one top-level folder.
  *
@@ -26,7 +26,7 @@ const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const git = (cmd) => execSync('git ' + cmd, { cwd: repo, encoding: 'utf8' });
 
 const version = readFileSync(join(repo, 'js/core/namespace.js'), 'utf8').match(/value: '([^']+)'/)[1];
-const name = 'kripto_wallet_offline_yet-' + version;
+const name = 'OfflineKey-Vault-' + version;
 const files = git('ls-files').split('\n').filter(Boolean).sort();
 
 // DOS date/time of the last commit (local fields of the UTC time; 2-second resolution).

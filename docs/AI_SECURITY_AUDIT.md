@@ -1,6 +1,6 @@
 # AI security audit specification
 
-You are auditing **kripto_wallet_offline_yet**, a static web app that generates cryptocurrency paper wallets offline by opening `index.html` from `file://`.
+You are auditing **OfflineKey Vault** (repository `snipeTR/OfflineKey-Vault`), a static web app that generates cryptocurrency paper wallets offline by opening `index.html` from `file://`.
 Report every way an attacker could learn, predict, alter or exfiltrate generated secrets, or make the app produce unrecoverable or wrong keys.
 
 ## 1. System facts

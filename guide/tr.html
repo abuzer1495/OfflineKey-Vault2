@@ -11,7 +11,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <title>Ultra güvenlik rehberi — kâğıt cüzdan</title>
+  <title>Ultra güvenlik rehberi — OfflineKey Vault</title>
   <link rel="stylesheet" href="../css/app.css">
 </head>
 <body>
@@ -122,10 +122,10 @@
   <p>Tails'in indirme sayfasında <strong>"Select your download to verify…"</strong> (indirdiğinizi doğrulamak için seçin) düğmesi vardır. İndirdiğiniz dosyayı seçin; <strong>"Verification successful!"</strong> (doğrulama başarılı) yazısını görmeden devam etmeyin.</p>
   <div class="tip"><strong>Benzetme:</strong> Doğrulama, bir paketin üzerindeki mühürle içindekinin aynı olduğunu kontrol etmek gibidir. Dosyada tek bir harf bile değişse sonuç "başarısız" çıkar.</div>
   <h3>Bu uygulamanın zip dosyasını doğrulayın</h3>
-  <p>Zip'i GitHub'daki <em>Releases</em> (sürümler) sayfasından indirin; yanındaki <code>SHA256SUMS</code> dosyası zip'in <strong>SHA-256 değerini</strong> (dosyanın benzersiz parmak izi) içerir. Kendi hesapladığınız değer bununla <strong>birebir</strong> aynı olmalı:</p>
+  <p>Zip'i yalnızca projenin GitHub'daki <em>Releases</em> (sürümler) sayfasından indirin: <code>https://github.com/snipeTR/OfflineKey-Vault/releases</code>. Yanındaki <code>SHA256SUMS</code> dosyası zip'in <strong>SHA-256 değerini</strong> (dosyanın benzersiz parmak izi) içerir. Kendi hesapladığınız değer bununla <strong>birebir</strong> aynı olmalı:</p>
   <ul>
-    <li><strong>Windows:</strong> Komut İstemi'ni açın ve <code>certutil -hashfile kripto_wallet_offline_yet-X.Y.Z.zip SHA256</code> yazın.</li>
-    <li><strong>macOS:</strong> Terminal'de <code>shasum -a 256 kripto_wallet_offline_yet-X.Y.Z.zip</code></li>
+    <li><strong>Windows:</strong> Komut İstemi'ni açın ve <code>certutil -hashfile OfflineKey-Vault-X.Y.Z.zip SHA256</code> yazın.</li>
+    <li><strong>macOS:</strong> Terminal'de <code>shasum -a 256 OfflineKey-Vault-X.Y.Z.zip</code></li>
     <li><strong>Linux:</strong> <code>sha256sum -c SHA256SUMS</code> ("OK" yazmalı).</li>
   </ul>
 </section>

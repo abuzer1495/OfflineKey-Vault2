@@ -16,7 +16,7 @@
   var summary = el('pre', { id: 'summary' });
 
   root.appendChild(el('header', null, el('h1', null, 'Test suite'),
-    el('p', { class: 'muted' }, 'Wallet generator v' + WG.version + ' — ' + navigator.userAgent)));
+    el('p', { class: 'muted' }, 'OfflineKey Vault v' + WG.version + ' — ' + navigator.userAgent)));
   root.appendChild(el('section', { class: 'card' }, status, summary));
   root.appendChild(el('section', { class: 'card' },
     el('table', { class: 'results' },

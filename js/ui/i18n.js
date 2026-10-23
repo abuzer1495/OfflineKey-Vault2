@@ -17,7 +17,7 @@
 
   var dict = {
     tr: {
-      appTitle: 'Çevrimdışı Kâğıt Cüzdan Üreticisi',
+      appTitle: 'OfflineKey Vault — Çevrimdışı Kâğıt Cüzdan',
       appSubtitle: 'Bitcoin, Ethereum, Monero ve diğerleri için tarayıcıda, internetsiz cüzdan üretimi.',
       langSwitch: 'English',
       netOnline: 'İnternete bağlısınız. Gerçek bir cüzdan üretmeden önce bağlantıyı kesin (Wi-Fi/kablo) ve sayfayı yeniden açın.',
@@ -243,7 +243,7 @@
 
       // ---- PDF manual page (js/output/pdf-manual.js)
       manTitle: 'Kâğıt cüzdan — kullanım kılavuzu',
-      manCreated: 'Oluşturulma tarihi: {date} · kripto_wallet_offline_yet v{version}',
+      manCreated: 'Oluşturulma tarihi: {date} · OfflineKey Vault v{version}',
       manIntro: 'Bu belge çevrimdışı bir bilgisayarda, tarayıcının güvenli rastgele sayı üreteci ile sizin topladığınız entropi karıştırılarak üretilmiştir. Üretimden sonra tüm yedekler ve adresler otomatik olarak yeniden türetilip doğrulanmıştır.',
       manCardsTitle: 'Kartlar',
       manSeedCard: 'Kurtarma kelimeleri kartı: ön yüzündeki kelimeler, listelenen tüm coinlerin TEK yedeğidir. Sırayı değiştirmeyin; tek bir harf hatası cüzdanı kaybettirir. Arka yüzde adreslerin özeti vardır.',
@@ -260,7 +260,7 @@
       manSafety5: 'PDF dosyasını yazdırdıktan sonra kalıcı olarak silin.',
     },
     en: {
-      appTitle: 'Offline Paper Wallet Generator',
+      appTitle: 'OfflineKey Vault — Offline Paper Wallet',
       appSubtitle: 'In-browser, offline wallet generation for Bitcoin, Ethereum, Monero and more.',
       langSwitch: 'Türkçe',
       netOnline: 'You are online. Disconnect (Wi-Fi/cable) and reopen this page before generating a real wallet.',
@@ -486,7 +486,7 @@
 
       // ---- PDF manual page (js/output/pdf-manual.js)
       manTitle: 'Paper wallet — instructions',
-      manCreated: 'Created: {date} · kripto_wallet_offline_yet v{version}',
+      manCreated: 'Created: {date} · OfflineKey Vault v{version}',
       manIntro: 'This document was generated on an offline computer by mixing the browser\'s secure random generator with entropy you collected. After generation every backup and address was re-derived and verified automatically.',
       manCardsTitle: 'Cards',
       manSeedCard: 'Recovery words card: the words on the front are the ONLY backup of all listed coins. Keep the order; a single wrong letter loses the wallet. The back lists the addresses.',

@@ -72,7 +72,7 @@
     doc.addFileToVFS('DejaVuSansMono-Bold.ttf', window.WGFonts.monoBold);
     doc.addFont('DejaVuSansMono-Bold.ttf', FONT, 'bold');
     doc.setFont(FONT, 'normal');
-    doc.setProperties({ title: 'Paper wallet', subject: 'Offline paper wallet', creator: 'kripto_wallet_offline_yet ' + WG.version });
+    doc.setProperties({ title: 'Paper wallet', subject: 'Offline paper wallet', creator: 'OfflineKey Vault ' + WG.version });
     return doc;
   }
 

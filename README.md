@@ -1,4 +1,4 @@
-# kripto_wallet_offline_yet — Offline Paper Wallet Generator
+# OfflineKey Vault — Offline Paper Wallet Generator
 
 A portable, fully offline paper-wallet generator that runs in any modern
 browser by opening a single HTML file, and prints cut-ready wallet cards.
@@ -27,7 +27,8 @@ language, with an example and an everyday analogy — no crypto knowledge needed
 
 ## Use
 
-1. Download the release zip, verify it (`sha256sum -c SHA256SUMS`), extract it.
+1. Download the release zip from https://github.com/snipeTR/OfflineKey-Vault/releases,
+   verify it (`sha256sum -c SHA256SUMS`), extract it.
 2. Disconnect the computer from the internet (for maximum safety follow the
    ultra security guide: boot Tails from USB in Offline Mode).
 3. Double-click `index.html`. The page runs its cryptographic self-tests and

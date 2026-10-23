@@ -11,7 +11,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <title>Ultra security guide — paper wallet</title>
+  <title>Ultra security guide — OfflineKey Vault</title>
   <link rel="stylesheet" href="../css/app.css">
 </head>
 <body>
@@ -122,10 +122,10 @@
   <p>The Tails download page has a <strong>"Select your download to verify…"</strong> button. Select the file you downloaded; do not continue until you see <strong>"Verification successful!"</strong>.</p>
   <div class="tip"><strong>Analogy:</strong> verification is like checking that the seal on a parcel matches its contents. If even one letter of the file changed, the result is "failed".</div>
   <h3>Verify this app's zip</h3>
-  <p>Download the zip from the GitHub <em>Releases</em> page; the <code>SHA256SUMS</code> file next to it holds the zip's <strong>SHA-256 value</strong> (the file's unique fingerprint). The value you compute must match it <strong>exactly</strong>:</p>
+  <p>Download the zip only from the project's GitHub <em>Releases</em> page: <code>https://github.com/snipeTR/OfflineKey-Vault/releases</code>. The <code>SHA256SUMS</code> file next to it holds the zip's <strong>SHA-256 value</strong> (the file's unique fingerprint). The value you compute must match it <strong>exactly</strong>:</p>
   <ul>
-    <li><strong>Windows:</strong> open Command Prompt and type <code>certutil -hashfile kripto_wallet_offline_yet-X.Y.Z.zip SHA256</code></li>
-    <li><strong>macOS:</strong> in Terminal, <code>shasum -a 256 kripto_wallet_offline_yet-X.Y.Z.zip</code></li>
+    <li><strong>Windows:</strong> open Command Prompt and type <code>certutil -hashfile OfflineKey-Vault-X.Y.Z.zip SHA256</code></li>
+    <li><strong>macOS:</strong> in Terminal, <code>shasum -a 256 OfflineKey-Vault-X.Y.Z.zip</code></li>
     <li><strong>Linux:</strong> <code>sha256sum -c SHA256SUMS</code> (must print "OK").</li>
   </ul>
 </section>
