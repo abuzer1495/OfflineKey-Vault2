@@ -68,6 +68,13 @@ computer — see section 14 of the guide.
 - `vendor/VENDOR.md` + `vendor/SHA256SUMS` — exact third-party versions
   (noble/scure crypto, jsPDF, qrcode-generator, DejaVu font), rebuilt
   reproducibly by `tools/vendor-build`.
+- **Release files are built by GitHub Actions** (`.github/workflows/release.yml`),
+  not on a personal computer, and carry GitHub-signed build provenance.
+  On an online computer with the GitHub CLI:
+  `gh attestation verify OfflineKey-Vault-X.Y.Z.zip --repo snipeTR/OfflineKey-Vault`
+  (same for the `.html`). You can also rebuild the single-file edition from
+  the tag with `node tools/release/single-file.mjs out.html` and compare its
+  SHA-256 with `SHA256SUMS`.
 - `docs/AI_SECURITY_AUDIT.md` — a compact specification for auditing the
   project with an AI model.
 - `docs/PLAN.md` — design and progress log.
@@ -91,8 +98,13 @@ computer — see section 14 of the guide.
 node tools/browser-test/run.mjs                 # index.html + tests in Chrome/Edge/Firefox
 node tools/dev/node-harness.mjs [filter]        # fast test loop in Node.js
 cd tools/vendor-build && npm ci --ignore-scripts && npm run build
-node tools/release/make-zip.mjs                 # dist/*.zip + SHA256SUMS
+node tools/release/make-zip.mjs                 # local dry run: dist/*.zip, *.html, SHA256SUMS
 ```
+
+Releasing: bump the version in `js/core/namespace.js`, add
+`docs/release-notes/vX.Y.Z.md` (first line `# title`), commit, push, then
+`git tag vX.Y.Z && git push origin vX.Y.Z`. GitHub Actions tests, builds,
+attests and publishes the release.
 
 ---
 

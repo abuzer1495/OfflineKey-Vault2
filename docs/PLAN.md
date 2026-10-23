@@ -1,6 +1,6 @@
 # Plan — OfflineKey Vault: portable, çevrimdışı, çoklu coin kâğıt cüzdan üreticisi
 
-**Durum:** v0.5.1 (2026-10-24, pre-release). Repo: [`snipeTR/OfflineKey-Vault`](https://github.com/snipeTR/OfflineKey-Vault) (eski adı `kripto_wallet_offline_yet`), dal `main`.
+**Durum:** v0.6.0 (2026-10-24, pre-release). Repo: [`snipeTR/OfflineKey-Vault`](https://github.com/snipeTR/OfflineKey-Vault) (eski adı `kripto_wallet_offline_yet`), dal `main`.
 Odak: basılıp kesilmeye uygun kâğıt cüzdan kartları.
 Önceki proje `monero-PDF-wallet-generator` (PHP, yalnızca Monero) GitHub'dan ve yerelden kaldırıldı; geçmişi yalnızca yerel bir git bundle yedeğinde duruyor.
 
@@ -12,7 +12,7 @@ Odak: basılıp kesilmeye uygun kâğıt cüzdan kartları.
 4. Tüm kodda ne yaptığını anlatan yorumlar bulunur (yorumlar İngilizce, arayüz TR/EN).
 5. Projeyi bir yapay zekâya en az cümleyle eksiksiz anlatan güvenlik denetim tarifnamesi bulunur: [`docs/AI_SECURITY_AUDIT.md`](AI_SECURITY_AUDIT.md).
 6. Kod mümkün olduğunca sade tutulur.
-7. Her bitmiş değişiklik sürüm numarası artırılarak GitHub release olarak yayımlanır (özellik → ikinci hane, düzeltme → üçüncü hane).
+7. Her bitmiş değişiklik sürüm numarası artırılarak GitHub release olarak yayımlanır (özellik → ikinci hane, düzeltme → üçüncü hane). Release dosyalarını kişisel bilgisayar değil GitHub Actions üretir: sürüm numarası + `docs/release-notes/vX.Y.Z.md` commit'lenir, `vX.Y.Z` etiketi push'lanır, `.github/workflows/release.yml` test eder, üretir, köken belgesini (build provenance) imzalar ve yayımlar.
 
 ## 2. Kuralların teknik sonuçları
 
@@ -96,6 +96,8 @@ tools/vectors/                Resmi vektörleri commit'e sabitli kaynaklardan i�
 tools/vendor-build/           vendor/ dosyalarını tekrar üretme
 tools/release/make-zip.mjs    Tekrar üretilebilir release zip + tek dosya sürümü + SHA256SUMS
 tools/release/single-file.mjs Telefonlar için tek dosya sürümü (her şey gömülü, CSP özetli)
+.github/workflows/release.yml Etiket push'lanınca GitHub'da test, üretim, köken belgesi ve yayın
+docs/release-notes/           Her sürümün release notu (ilk satır başlık)
 guide/tr.html guide/en.html   Ultra güvenlik rehberi (statik, script yok)
 docs/PLAN.md                  Bu dosya
 docs/AI_SECURITY_AUDIT.md     Yapay zekâ denetim tarifnamesi
@@ -161,7 +163,7 @@ Notlar (arayüzde ve kılavuz sayfasında gösterilir): XRP ve Stellar minimum r
 - Üretici her cüzdanı göstermeden önce yedeği yeniden çözer, adresleri yeniden türetir, basılacak her anahtarı geri çözüp karşılaştırır.
 - "Temizle" anahtar dizilerini sıfırlar, girilen parolaları boşaltır; "Baştan başla" entropiyi de siler.
 - Arka plan resimleri canvas'tan geçirilip JPEG'e çevrilir (EXIF/konum silinir).
-- Release: tekrar üretilebilir zip, telefonlar için tek dosya sürümü (yalnızca gömülü script'lerin SHA-256 özetlerine izin veren CSP) ve ikisini kapsayan `SHA256SUMS`.
+- Release: tekrar üretilebilir zip, telefonlar için tek dosya sürümü (yalnızca gömülü script'lerin SHA-256 özetlerine izin veren CSP) ve ikisini kapsayan `SHA256SUMS`. Dosyaları GitHub Actions üretir (eylemler commit SHA'sına sabitli, yalnızca otomatik token, en az izin) ve GitHub imzalı köken belgesi ekler: `gh attestation verify <dosya> --repo snipeTR/OfflineKey-Vault`. Release aracı commit'lenmemiş değişiklik varsa çalışmaz.
 
 ## 10. Test
 
@@ -185,6 +187,7 @@ Notlar (arayüzde ve kılavuz sayfasında gösterilir): XRP ve Stellar minimum r
 | v0.4.1 | Proje adı **OfflineKey Vault** oldu (repo `snipeTR/OfflineKey-Vault`); başlıklar, belgeler, PDF bilgisi ve release zip adı (`OfflineKey-Vault-X.Y.Z.zip`) güncellendi. |
 | v0.5.0 | Mobil uyum: telefon/dokunmatik düzeni, telefonlar için tek dosya sürümü (`OfflineKey-Vault-X.Y.Z.html`, gömülü rehber, özet tabanlı CSP), rehbere telefon/tablet bölümü, PDF/QR/font kütüphaneleri için kritik başlangıç testi; testler telefon boyutunda da çalışıyor ve indirmeler artık kullanıcının İndirilenler klasörüne düşmüyor. |
 | v0.5.1 | Android'de coin seçince sayfanın yukarı zıplaması düzeltildi (panel yeniden kurulurken kaydırma konumu ve odak korunuyor; akış testi kontrol ediyor). PDF kartlarının iki yüzüne eşleşme kodu "-xxxxx". A5 seçilince kılavuz da A5 ve gerektiği kadar sayfaya bölünüyor. 3 yeni PDF testi. |
+| v0.6.0 | Release'ler GitHub Actions'ta üretiliyor ve yayımlanıyor (testler, zip'ten çıkan kopyada tarayıcı testleri, GitHub imzalı köken belgesi); release aracı commit'lenmemiş değişiklikte durur. Uygulamada değişiklik yok. |
 
 ## 12. Açık işler
 

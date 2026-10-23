@@ -1,0 +1,85 @@
+# .github/workflows/release.yml
+#
+# PURPOSE
+#   Builds, tests and publishes a release on GitHub's own servers whenever a
+#   version tag (vX.Y.Z) is pushed, so the release files are not produced on
+#   anybody's personal computer:
+#     1. the tag must match the version in js/core/namespace.js
+#     2. Node.js tests (tools/dev/node-harness.mjs)
+#     3. build dist/OfflineKey-Vault-X.Y.Z.zip, the single-file .html and
+#        SHA256SUMS (tools/release/make-zip.mjs)
+#     4. unpack the zip and run the browser tests on the unpacked copy
+#        (Chrome, Edge, Firefox; includes the single-file edition)
+#     5. GitHub-signed build provenance for both files
+#        (verify: gh attestation verify <file> --repo snipeTR/OfflineKey-Vault)
+#     6. create the (pre-)release with the three files; notes come from
+#        docs/release-notes/vX.Y.Z.md
+#
+# SECURITY
+#   Third-party actions are pinned to full commit SHAs (the version is noted
+#   next to each). No secrets besides the automatic GITHUB_TOKEN are used.
+
+name: release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write        # create the release and upload files
+  id-token: write        # sign the build provenance
+  attestations: write    # store the build provenance
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out the tagged commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - name: Tag must match the app version
+        run: |
+          version=$(grep -o "value: '[^']*'" js/core/namespace.js | head -1 | cut -d"'" -f2)
+          test "v$version" = "$GITHUB_REF_NAME" || { echo "tag $GITHUB_REF_NAME != version v$version"; exit 1; }
+          test -f "docs/release-notes/$GITHUB_REF_NAME.md" || { echo "missing docs/release-notes/$GITHUB_REF_NAME.md"; exit 1; }
+
+      - name: Node.js tests
+        run: node tools/dev/node-harness.mjs
+
+      - name: Build release files
+        run: node tools/release/make-zip.mjs
+
+      - name: Verify checksums
+        run: cd dist && sha256sum -c SHA256SUMS
+
+      - name: Browser tests on the unpacked zip
+        run: |
+          mkdir -p /tmp/unpacked
+          unzip -q "dist/OfflineKey-Vault-${GITHUB_REF_NAME#v}.zip" -d /tmp/unpacked
+          cd "/tmp/unpacked/OfflineKey-Vault-${GITHUB_REF_NAME#v}"
+          (cd vendor && sha256sum -c SHA256SUMS)
+          node tools/browser-test/run.mjs
+
+      - name: Build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            dist/OfflineKey-Vault-*.zip
+            dist/OfflineKey-Vault-*.html
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # First line of the notes file ("# title") is the release title, the rest the notes.
+          notes="docs/release-notes/$GITHUB_REF_NAME.md"
+          title=$(head -n 1 "$notes" | sed 's/^# *//')
+          tail -n +2 "$notes" > /tmp/notes.md
+          gh release create "$GITHUB_REF_NAME" dist/OfflineKey-Vault-*.zip dist/OfflineKey-Vault-*.html dist/SHA256SUMS \
+            --prerelease --title "$title" --notes-file /tmp/notes.md --verify-tag

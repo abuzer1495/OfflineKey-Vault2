@@ -15,6 +15,7 @@ Report every way an attacker could learn, predict, alter or exfiltrate generated
 8. UI code is in `js/ui/`, PDF output in `js/output/`; all text is inserted with `textContent` via `js/ui/dom.js`; the security guide pages `guide/*.html` are static HTML with no scripts.
 9. The Content-Security-Policy `<meta>` in `index.html` sets `default-src 'none'`, `script-src 'self'`, `connect-src 'none'` and `form-action 'none'`; the phone edition `OfflineKey-Vault-X.Y.Z.html`, built by `tools/release/single-file.mjs`, inlines the same files and replaces `'self'` with the SHA-256 hashes of exactly those inlined scripts and stylesheet.
 10. `tests/test.html` runs every test against official vectors pinned to upstream commits in `tests/vectors/`, and `tools/browser-test/run.mjs` runs it headless in Chrome, Edge and Firefox.
+11. Releases are built, tested and published by `.github/workflows/release.yml` on a pushed `vX.Y.Z` tag, with SHA-pinned actions and GitHub-signed build provenance for the zip and the single-file edition.
 
 ## 2. Threat model
 
@@ -31,7 +32,7 @@ Out of scope: a fully compromised operating system, physical theft of printed ca
 6. **Self-verification is real:** every branch of `generator.js` throws instead of returning a wallet when a check fails, and the checks compare independently decoded data rather than reusing the same objects.
 7. **Secret handling:** secrets are never logged, never written into attributes, URLs or the DOM before the user presses "Show", the passphrase and BIP38 password are never stored in the wallet set or printed, and `wipe()` zeroes every key buffer it holds.
 8. **Tamper resistance:** `WG` and `WGVendor` modules cannot be replaced after load, and a modified vendor file or KAT is detected by `vendor/SHA256SUMS` or by the start-up self-tests.
-9. **Vendor integrity:** `vendor/SHA256SUMS` matches the files, `tools/vendor-build` reproduces them from `package-lock.json`, and the pinned package versions have no known vulnerabilities affecting this use.
+9. **Vendor and release integrity:** `vendor/SHA256SUMS` matches the files, `tools/vendor-build` reproduces them from `package-lock.json`, the pinned package versions have no known vulnerabilities affecting this use, and `.github/workflows/release.yml` pins every action to a commit SHA, uses only the automatic token with minimal permissions, and publishes exactly what `tools/release/make-zip.mjs` built and the tests checked.
 10. **Output safety:** the PDF (`js/output/pdf.js`) contains only data shown in the result panel, background images are re-encoded through a canvas (no metadata), and the UI tells the user to delete the file.
 11. **Comment accuracy:** every file's header comment correctly describes what the code does; report any mismatch.
 12. **Tests:** `tests/test.html` reports `PASS n/n` in at least two browser engines, and every vector file names its upstream source and commit.

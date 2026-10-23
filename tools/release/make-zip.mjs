@@ -9,6 +9,11 @@
  *                                           (tools/release/single-file.mjs)
  *     dist/SHA256SUMS                       checksums of both
  *
+ * WHERE IT RUNS
+ *   Normally on GitHub Actions (.github/workflows/release.yml) when a vX.Y.Z
+ *   tag is pushed. It refuses to run with uncommitted changes, because it
+ *   reads the files from the working tree.
+ *
  * REPRODUCIBLE
  *   Files are sorted, every entry gets the timestamp of the last commit and
  *   fixed attributes, so the same commit always yields the same zip hash.
@@ -28,6 +33,13 @@ import { buildSingleFile } from './single-file.mjs';
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const git = (cmd) => execSync('git ' + cmd, { cwd: repo, encoding: 'utf8' });
+
+// Files are read from the working tree, so it must equal the commit exactly:
+// uncommitted changes would silently end up in a release.
+if (git('status --porcelain').trim()) {
+  console.error('working tree has uncommitted changes; commit or stash them first:\n' + git('status --short'));
+  process.exit(1);
+}
 
 const version = readFileSync(join(repo, 'js/core/namespace.js'), 'utf8').match(/value: '([^']+)'/)[1];
 const name = 'OfflineKey-Vault-' + version;
